@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>SiSurat Gampong - Daftar Akun Baru</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#546B41',
+            secondary: '#99AD7A',
+            accent: '#DCCCAC',
+            base: '#FFF8EC',
+            dark: '#2d3b22'
+          },
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .mesh-gradient-bg {
+      background-color: #FFF8EC;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(220, 204, 172, 0.25) 0px, transparent 50%),
+        radial-gradient(at 50% 0%, rgba(153, 173, 122, 0.25) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(84, 107, 65, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(255, 248, 236, 1) 0px, transparent 50%);
+    }
+
+    .blob-1 {
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(153, 173, 122, 0.4) 0%, rgba(153, 173, 122, 0) 70%);
+      filter: blur(50px);
+      animation: float-blob-1 12s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    .blob-2 {
+      position: absolute;
+      bottom: -10%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(220, 204, 172, 0.4) 0%, rgba(220, 204, 172, 0) 70%);
+      filter: blur(60px);
+      animation: float-blob-2 15s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    @keyframes float-blob-1 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(50px, 30px) scale(1.1); }
+    }
+
+    @keyframes float-blob-2 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-60px, -40px) scale(1.05); }
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 20px 60px rgba(84, 107, 65, 0.08);
+    }
+
+    .custom-input {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1.5px solid rgba(84, 107, 65, 0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .custom-input:focus {
+      background: #ffffff;
+      border-color: #546B41;
+      box-shadow: 0 0 0 4px rgba(84, 107, 65, 0.12);
+    }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="mesh-gradient-bg min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
+
+  <!-- Background Decorative Blobs -->
+  <div class="blob-1"></div>
+  <div class="blob-2"></div>
+
+  <!-- Global Loader & Toast Integration -->
+  <div id="globalLoader" class="fixed inset-0 z-[100] hidden items-center justify-center bg-white/60 backdrop-blur-sm">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-primary border-b-4"></div>
+  </div>
+  
+  <div id="toast" class="fixed bottom-6 right-6 z-[100] transform translate-y-20 opacity-0 transition-all duration-300">
+    <div class="bg-gray-900 text-white px-6 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10">
+      <i class="fa-solid fa-circle-info text-secondary text-lg"></i>
+      <span id="toastMsg" class="font-semibold text-sm"></span>
+    </div>
+  </div>
+
+  <!-- Register Container -->
+  <main class="relative z-10 w-full max-w-[620px] animate-fade-in py-6">
+    <!-- Back to home link -->
+    <div class="mb-4 text-left">
+      <a class="inline-flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-primary transition-colors" href="index.html">
+        <i class="fa-solid fa-arrow-left text-xs"></i>
+        <span>Kembali ke Beranda</span>
+      </a>
+    </div>
+
+    <!-- Register Glass Card -->
+    <div class="glass-card rounded-2xl p-6 md:p-8 transition-all duration-500 transform hover:scale-[1.002]">
+      
+      <!-- Compact Horizontal Branding Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <img src="logo.png" alt="Logo" class="w-24 h-24 object-contain cursor-pointer flex-shrink-0" onclick="window.location.href='index.html'" />
+          <div class="text-left">
+            <h1 class="text-xl font-extrabold text-primary tracking-tight leading-none mb-1">SiSurat Gampong</h1>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Administrasi Digital Terpadu</p>
+          </div>
+        </div>
+
+        <!-- Stepper Indicator -->
+        <div class="flex items-center gap-2">
+          <div id="stepIndicator1" class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs bg-primary text-white shadow-md shadow-primary/20 transition-all duration-300">1</div>
+          <div class="w-6 h-0.5 bg-gray-200"></div>
+          <div id="stepIndicator2" class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs bg-gray-100 text-gray-400 border border-gray-200 transition-all duration-300">2</div>
+        </div>
+      </div>
+
+      <!-- Tab Navigation Link -->
+      <div class="flex bg-gray-100/70 p-1 rounded-xl gap-1 mb-6 max-w-[280px] mx-auto">
+        <button id="tabBtnLogin" onclick="window.location.href='auth.html'" class="flex-1 py-1.5 font-semibold text-gray-500 hover:text-primary rounded-lg transition-all text-xs">Masuk</button>
+        <button id="tabBtnRegister" onclick="window.location.href='register.html'" class="flex-1 py-1.5 font-bold text-primary bg-white rounded-lg shadow-sm transition-all text-xs">Daftar Akun</button>
+      </div>
+
+      <!-- Register Form -->
+      <form id="registerForm">
+        
+        <!-- STEP 1: Profil Diri -->
+        <div id="step1" class="space-y-4">
+          <div class="text-left pb-1 border-b border-gray-100">
+            <h3 class="text-xs font-bold text-primary uppercase tracking-wide">Langkah 1: Profil Diri</h3>
+          </div>
+
+          <!-- KTP Upload & Camera Container -->
+          <div id="ktpScanContainer" class="border-2 border-dashed border-primary/30 bg-primary/[0.02] rounded-2xl p-4 text-center relative group overflow-hidden">
+            <input type="file" id="ktpFileInput" accept="image/*" class="hidden" />
+            <input type="hidden" id="fotoKtpBase64" name="foto_ktp_base64" />
+            
+            <!-- Default View: Buttons -->
+            <div id="ktpScanDefault" class="space-y-3 py-1">
+              <div>
+                <h4 class="text-xs font-bold text-gray-700">Foto / Scan KTP (Wajib)</h4>
+                <p class="text-[10px] text-gray-400 font-medium mt-0.5">Ambil foto langsung atau unggah berkas KTP untuk pendaftaran</p>
+              </div>
+              
+              <div class="flex items-center justify-center gap-3">
+                <button type="button" id="btnOpenCamera" class="px-3.5 py-2 bg-primary hover:bg-dark text-white font-bold text-[10px] rounded-xl transition-all flex items-center gap-1.5 shadow-sm active:scale-95">
+                  <i class="fa-solid fa-camera"></i>
+                  <span>Ambil Foto Kamera</span>
+                </button>
+                <button type="button" id="btnUploadFile" class="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-[10px] rounded-xl transition-all flex items-center gap-1.5 active:scale-95">
+                  <i class="fa-solid fa-upload"></i>
+                  <span>Unggah File KTP</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Preview View: Displays the uploaded/captured KTP photo -->
+            <div id="ktpScanPreview" class="hidden flex flex-col items-center justify-center space-y-2.5 py-1">
+              <div class="relative w-full max-w-[240px] aspect-[8.5/5.5] rounded-xl overflow-hidden shadow-md border border-gray-200 bg-gray-100">
+                <img id="ktpPreviewImg" src="" class="w-full h-full object-cover" alt="KTP Preview" />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] text-green-600 font-bold flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check"></i>
+                  <span>Foto KTP Berhasil Diunggah</span>
+                </span>
+                <button type="button" id="btnRemovePhoto" class="px-2.5 py-1 text-red-500 hover:text-red-700 font-bold text-[9px] rounded-lg border border-red-200 hover:bg-red-50 transition-all flex items-center gap-1 active:scale-95">
+                  <i class="fa-solid fa-trash-can"></i>
+                  <span>Hapus</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Nama Lengkap -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Nama Lengkap</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-regular fa-id-badge"></i></span>
+                <input class="w-full pl-10 pr-4 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="nama" placeholder="Nama Sesuai KTP" type="text" required />
+              </div>
+            </div>
+
+            <!-- NIK -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Nomor Induk Kependudukan (NIK)</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-regular fa-address-card"></i></span>
+                <input class="w-full pl-10 pr-4 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="nik" placeholder="16 Digit NIK Anda" type="text" pattern="[0-9]{16}" title="NIK harus berupa 16 digit angka" required />
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Alamat Email</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-regular fa-envelope"></i></span>
+                <input class="w-full pl-10 pr-4 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="email" placeholder="email@contoh.com" type="email" required />
+              </div>
+            </div>
+
+            <!-- Agama -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Agama</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-regular fa-star"></i></span>
+                <input class="w-full pl-10 pr-2 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="agama" placeholder="Contoh: Islam" type="text" required />
+              </div>
+            </div>
+
+            <!-- Tempat Lahir -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Tempat Lahir</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-solid fa-location-dot"></i></span>
+                <input class="w-full pl-10 pr-2 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="tempat_lahir" placeholder="Kota Lahir" type="text" required />
+              </div>
+            </div>
+
+            <!-- Tanggal Lahir -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Tanggal Lahir</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-regular fa-calendar"></i></span>
+                <input class="w-full pl-10 pr-2 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="tanggal_lahir" type="date" required />
+              </div>
+            </div>
+
+            <!-- Jenis Kelamin -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Jenis Kelamin</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-solid fa-venus-mars"></i></span>
+                <select class="w-full pl-10 pr-2 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="jenis_kelamin" required>
+                  <option value="">Pilih Jenis Kelamin</option>
+                  <option value="Laki-laki">Laki-laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Button Step 1 -->
+          <div class="pt-2 text-right">
+            <button type="button" onclick="nextStep()" class="w-full md:w-auto px-6 py-2.5 bg-primary text-white font-bold text-xs rounded-xl shadow-md hover:bg-dark active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 ml-auto">
+              <span>Lanjut</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Data Tambahan & Kredensial -->
+        <div id="step2" class="space-y-4 hidden animate-fade-in">
+          <div class="text-left pb-1 border-b border-gray-100">
+            <h3 class="text-xs font-bold text-primary uppercase tracking-wide">Langkah 2: Data Tambahan</h3>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Pekerjaan -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Pekerjaan</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-solid fa-briefcase"></i></span>
+                <input class="w-full pl-10 pr-2 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="pekerjaan" placeholder="Contoh: Wiraswasta" type="text" required />
+              </div>
+            </div>
+
+            <!-- Status Perkawinan -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Status Perkawinan</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-regular fa-heart"></i></span>
+                <select class="w-full pl-10 pr-2 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="status_perkawinan" required>
+                  <option value="">Pilih Status</option>
+                  <option value="Belum Kawin">Belum Kawin</option>
+                  <option value="Kawin">Kawin</option>
+                  <option value="Cerai Hidup">Cerai Hidup</option>
+                  <option value="Cerai Mati">Cerai Mati</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Alamat Lengkap -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Alamat Lengkap (KTP)</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-3.5 text-gray-400 text-xs"><i class="fa-solid fa-map-pin"></i></span>
+                <textarea class="w-full pl-10 pr-4 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="alamat" placeholder="Alamat lengkap RT/RW, Dusun, Desa..." rows="2" required></textarea>
+              </div>
+            </div>
+
+            <!-- Kata Sandi Baru -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Kata Sandi Baru</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
+                <input class="w-full pl-10 pr-2 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="password" placeholder="••••••••" type="password" required />
+              </div>
+            </div>
+
+            <!-- Ulangi Sandi -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-gray-500 px-0.5">Ulangi Sandi</label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"><i class="fa-solid fa-lock-open"></i></span>
+                <input class="w-full pl-10 pr-2 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" name="confirmPassword" placeholder="••••••••" type="password" required />
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons Step 2 -->
+          <div class="pt-2 flex justify-between gap-4">
+            <button type="button" onclick="prevStep()" class="px-6 py-2.5 bg-gray-100 text-gray-600 font-bold text-xs rounded-xl hover:bg-gray-200 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-arrow-left text-[10px]"></i>
+              <span>Kembali</span>
+            </button>
+            <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-primary to-dark text-white font-bold text-xs rounded-xl shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1.5">
+              <span>Daftar Sekarang</span>
+              <i class="fa-solid fa-user-plus text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Footer Help link -->
+      <div class="mt-6 pt-4 border-t border-gray-100 text-center">
+        <p class="text-[11px] font-semibold text-gray-400">
+          Butuh bantuan? <a href="#" class="text-primary hover:underline font-bold font-sans">Hubungi Administrator</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Copyright Footer -->
+    <footer class="mt-5 text-center px-4">
+      <p class="text-[10px] font-semibold text-gray-400 leading-normal">
+        © 2026 Pemerintah Gampong. Seluruh Hak Cipta Dilindungi.
+        <br/>
+        Platform Keamanan Terenkripsi • v2.2.0
+      </p>
+    </footer>
+  </main>
+
+  <!-- Camera Scanner Modal -->
+  <div id="cameraModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900/80 backdrop-blur-md p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl flex flex-col relative animate-fade-in border border-gray-100">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+        <div>
+          <h3 class="text-sm font-bold text-primary flex items-center gap-1.5">
+            <i class="fa-solid fa-camera"></i>
+            <span>Pindai KTP via Kamera</span>
+          </h3>
+          <p class="text-[9px] text-gray-400 font-semibold uppercase tracking-wider mt-0.5">Arahkan kartu KTP Anda ke dalam bingkai panduan</p>
+        </div>
+        <button id="btnCloseCamera" type="button" class="text-gray-400 hover:text-red-500 transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Live Video Viewport with guides -->
+      <div class="relative bg-black aspect-[4/3] flex items-center justify-center overflow-hidden">
+        <video id="cameraVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
+        
+        <!-- guide frame overlay -->
+        <div class="absolute inset-0 pointer-events-none flex items-center justify-center p-6">
+          <div class="w-full max-w-[340px] aspect-[8.5/5.5] border-2 border-dashed border-white/60 rounded-xl relative flex flex-col items-center justify-center bg-black/30 backdrop-contrast-125">
+            <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-secondary -mt-[2px] -ml-[2px] rounded-tl-lg"></div>
+            <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-secondary -mt-[2px] -mr-[2px] rounded-tr-lg"></div>
+            <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-secondary -mb-[2px] -ml-[2px] rounded-bl-lg"></div>
+            <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-secondary -mb-[2px] -mr-[2px] rounded-br-lg"></div>
+            
+            <span class="text-[10px] text-white font-bold tracking-wide drop-shadow-md bg-black/40 px-2 py-0.5 rounded-full">TEMPATKAN KARTU KTP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
+        <button id="btnSwitchCamera" type="button" class="hidden px-3.5 py-2 border border-gray-200 text-gray-600 font-bold text-xs rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <span>Ganti Kamera</span>
+        </button>
+        
+        <button id="btnCapturePhoto" type="button" class="px-6 py-2.5 bg-secondary text-white font-bold text-xs rounded-xl hover:bg-amber-600 active:scale-95 shadow-md shadow-secondary/15 transition-all flex items-center gap-1.5 ml-auto">
+          <i class="fa-solid fa-circle-dot text-sm animate-pulse"></i>
+          <span>Ambil Foto & Pindai</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="app.js?v=2"></script>
+  <script>
+    // KTP Photo Handling
+    const dropzone = document.getElementById('ktpScanContainer');
+    const fileInput = document.getElementById('ktpFileInput');
+    const viewDefault = document.getElementById('ktpScanDefault');
+    const viewPreview = document.getElementById('ktpScanPreview');
+    const previewImg = document.getElementById('ktpPreviewImg');
+    const fotoKtpBase64Input = document.getElementById('fotoKtpBase64');
+    const btnRemovePhoto = document.getElementById('btnRemovePhoto');
+
+    const btnOpenCamera = document.getElementById('btnOpenCamera');
+    const btnUploadFile = document.getElementById('btnUploadFile');
+    const cameraModal = document.getElementById('cameraModal');
+    const btnCloseCamera = document.getElementById('btnCloseCamera');
+    const btnSwitchCamera = document.getElementById('btnSwitchCamera');
+    const btnCapturePhoto = document.getElementById('btnCapturePhoto');
+
+    let cameraStream = null;
+    let currentFacingMode = 'environment'; // Back camera default
+
+    // Open/Close Modal
+    btnOpenCamera.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openCameraModal();
+    });
+
+    btnUploadFile.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+
+    btnCloseCamera.addEventListener('click', closeCameraModal);
+
+    btnSwitchCamera.addEventListener('click', () => {
+      currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+      startCamera();
+    });
+
+    btnCapturePhoto.addEventListener('click', capturePhoto);
+
+    btnRemovePhoto.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearKTPPhoto();
+    });
+
+    async function openCameraModal() {
+      cameraModal.classList.remove('hidden');
+      cameraModal.classList.add('flex');
+      await startCamera();
+    }
+
+    function closeCameraModal() {
+      cameraModal.classList.add('hidden');
+      cameraModal.classList.remove('flex');
+      stopCamera();
+    }
+
+    async function startCamera() {
+      const video = document.getElementById('cameraVideo');
+      if (cameraStream) {
+        stopCamera();
+      }
+
+      try {
+        const constraints = {
+          video: {
+            facingMode: currentFacingMode,
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        };
+        cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = cameraStream;
+
+        // Detect if switch camera button should show
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        if (videoDevices.length > 1) {
+          btnSwitchCamera.classList.remove('hidden');
+        } else {
+          btnSwitchCamera.classList.add('hidden');
+        }
+      } catch (err) {
+        console.error("Camera stream start failed:", err);
+        showToast("Kamera tidak dapat diakses. Mohon izinkan akses kamera.");
+        closeCameraModal();
+      }
+    }
+
+    function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      const video = document.getElementById('cameraVideo');
+      if (video) video.srcObject = null;
+    }
+
+    function capturePhoto() {
+      const video = document.getElementById('cameraVideo');
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const file = new File([blob], "ktp_capture.jpg", { type: "image/jpeg" });
+          processKTPFile(file);
+        } else {
+          showToast("Gagal mengambil foto. Silakan coba lagi.");
+        }
+      }, 'image/jpeg', 0.95);
+
+      closeCameraModal();
+    }
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('border-primary', 'bg-primary/[0.06]');
+    });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('border-primary', 'bg-primary/[0.06]');
+    });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-primary', 'bg-primary/[0.06]');
+      if (e.dataTransfer.files.length > 0) {
+        processKTPFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        processKTPFile(e.target.files[0]);
+      }
+    });
+
+    function processKTPFile(file) {
+      if (!file.type.startsWith('image/')) {
+        showToast('Unggah file gambar KTP saja (.png, .jpg, .jpeg)');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const base64String = event.target.result;
+        fotoKtpBase64Input.value = base64String;
+        previewImg.src = base64String;
+        
+        viewDefault.classList.add('hidden');
+        viewPreview.classList.remove('hidden');
+        showToast('Foto KTP berhasil dimuat.');
+      };
+      reader.onerror = function() {
+        showToast('Gagal membaca file foto KTP.');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearKTPPhoto() {
+      fotoKtpBase64Input.value = '';
+      previewImg.src = '';
+      fileInput.value = '';
+      
+      viewPreview.classList.add('hidden');
+      viewDefault.classList.remove('hidden');
+      showToast('Foto KTP dihapus.');
+    }
+
+    function nextStep() {
+      // Validate KTP photo upload
+      const fotoKtp = document.getElementById('fotoKtpBase64').value;
+      if (!fotoKtp) {
+        showToast('Silakan ambil foto KTP atau unggah file KTP terlebih dahulu.');
+        return;
+      }
+
+      const fields = document.querySelectorAll('#step1 input, #step1 select');
+      let allValid = true;
+      fields.forEach(field => {
+        // Exclude the hidden base64 input from default validity reporting
+        if (field.id === 'fotoKtpBase64') return;
+        if (!field.checkValidity()) {
+          field.reportValidity();
+          allValid = false;
+        }
+      });
+      if (allValid) {
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+        
+        document.getElementById('stepIndicator1').className = 'w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs bg-gray-100 text-gray-500 border border-gray-200 transition-all duration-300';
+        document.getElementById('stepIndicator2').className = 'w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs bg-primary text-white shadow-md shadow-primary/20 transition-all duration-300';
+      }
+    }
+
+    function prevStep() {
+      document.getElementById('step2').classList.add('hidden');
+      document.getElementById('step1').classList.remove('hidden');
+      
+      document.getElementById('stepIndicator1').className = 'w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs bg-primary text-white shadow-md shadow-primary/20 transition-all duration-300';
+      document.getElementById('stepIndicator2').className = 'w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs bg-gray-100 text-gray-400 border border-gray-200 transition-all duration-300';
+    }
+
+    // Entrance Animation
+    window.addEventListener('DOMContentLoaded', () => {
+      const card = document.querySelector('.glass-card');
+      if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(15px)';
+        
+        setTimeout(() => {
+          card.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100);
+      }
+    });
+  </script>
+</body>
+</html>

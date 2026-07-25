@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>SiSurat Gampong - Administrasi Desa Digital</title>
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  
+  <!-- Font Stylesheets -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- Icon Libraries -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Tailwind Configuration (Original Theme Color Bindings) -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-secondary": "#ffffff",
+            "tertiary-fixed-dim": "#d5c5a5",
+            "on-tertiary-container": "#f1e0bf",
+            "outline-variant": "#c4c8bb",
+            "outline": "#74796e",
+            "on-tertiary-fixed": "#231b06",
+            "tertiary-fixed": "#f1e1c0",
+            "surface-container-highest": "#e3e3dd",
+            "on-tertiary": "#ffffff",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "primary-container": "#546b41",
+            "on-tertiary-fixed-variant": "#50462d",
+            "on-primary-fixed": "#0d2001",
+            "inverse-primary": "#b5cf9c",
+            "on-surface-variant": "#44483f",
+            "surface-container-low": "#f5f4ed",
+            "on-secondary-fixed-variant": "#3b4c23",
+            "background": "#fbf9f3",
+            "secondary-fixed-dim": "#b9ce98",
+            "secondary-fixed": "#d5eab2",
+            "on-error-container": "#93000a",
+            "on-secondary-fixed": "#111f00",
+            "surface-dim": "#dbdad4",
+            "surface-bright": "#fbf9f3",
+            "primary-fixed": "#d0ebb7",
+            "primary": "#3d532b",
+            "on-primary-fixed-variant": "#374d26",
+            "on-surface": "#1b1c18",
+            "on-error": "#ffffff",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#6f6349",
+            "surface": "#fbf9f3",
+            "surface-variant": "#e3e3dd",
+            "surface-tint": "#4e653c",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#e9e8e2",
+            "inverse-on-surface": "#f2f1eb",
+            "tertiary": "#564b33",
+            "on-background": "#1b1c18",
+            "primary-fixed-dim": "#b5cf9c",
+            "inverse-surface": "#30312d",
+            "on-primary-container": "#d0ebb6",
+            "surface-container": "#efeee8",
+            "secondary": "#526438",
+            "on-secondary-container": "#586a3e",
+            "secondary-container": "#d5eab2"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"],
+            display: ["Outfit", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Warm Light-Glassmorphism Custom Styles */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(84, 107, 65, 0.15);
+      box-shadow: 0 10px 40px -10px rgba(84, 107, 65, 0.08);
+    }
+    
+    .glass-nav {
+      background: rgba(251, 249, 243, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(84, 107, 65, 0.15);
+    }
+
+    /* Scroll Animation Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Soft Green glowing background blobs */
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    @keyframes pulse-slow {
+      0%, 100% { transform: scale(1) translate(0px, 0px); }
+      33% { transform: scale(1.08) translate(15px, -20px); }
+      66% { transform: scale(0.95) translate(-8px, 10px); }
+    }
+    .animate-pulse-slow {
+      animation: pulse-slow 12s infinite alternate ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-float {
+      animation: float 6s infinite ease-in-out;
+    }
+
+    /* Custom Webkit scrollbar for light theme */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #fbf9f3;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+      border: 2px solid #fbf9f3;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .hero-pattern {
+      background-image: radial-gradient(circle at 2px 2px, rgba(84, 107, 65, 0.05) 1px, transparent 0);
+      background-size: 32px 32px;
+    }
+
+    .status-ping {
+      box-shadow: 0 0 10px rgba(84, 107, 65, 0.15);
+    }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-background text-on-surface font-sans overflow-x-hidden selection:bg-primary selection:text-white relative hero-pattern">
+
+  <!-- Light Green Glow Background Objects -->
+  <div class="glow-blob w-[500px] h-[500px] bg-secondary/8 top-20 left-10 animate-pulse-slow"></div>
+  <div class="glow-blob w-[450px] h-[450px] bg-primary-container/8 top-[700px] right-5 animate-pulse-slow" style="animation-delay: 2s;"></div>
+  <div class="glow-blob w-[600px] h-[600px] bg-secondary-container/10 top-[1500px] left-1/4 animate-pulse-slow" style="animation-delay: 4s;"></div>
+
+  <!-- Global Loader & Toast -->
+  <div id="globalLoader" class="fixed inset-0 z-[100] hidden items-center justify-center bg-white/60 backdrop-blur-md">
+    <div class="relative flex items-center justify-center">
+      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-primary border-b-4 border-transparent"></div>
+      <div class="absolute h-10 w-10 bg-background rounded-full flex items-center justify-center">
+        <i class="fa-solid fa-file-invoice text-primary text-xs animate-pulse"></i>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="fixed bottom-6 right-6 z-[100] transform translate-y-20 opacity-0 transition-all duration-300">
+    <div class="glass-card px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-outline-variant/30">
+       <span class="material-symbols-outlined text-secondary">info</span>
+       <span id="toastMsg" class="font-semibold text-sm text-on-surface"></span>
+    </div>
+  </div>
+
+  <!-- Sticky Top Navigation -->
+  <nav class="glass-nav sticky top-0 z-50 w-full px-6 md:px-12 py-4 flex justify-between items-center transition-all duration-300">
+    <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
+      <img src="logo.png" alt="Logo" class="w-11 h-11 object-contain" />
+      <div class="flex flex-col">
+        <span class="font-display text-xl font-black text-primary leading-tight">SiSurat Gampong</span>
+        <span class="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider">Digital Government Portal</span>
+      </div>
+    </div>
+
+    <div class="hidden md:flex items-center gap-8 font-semibold text-sm text-on-surface-variant">
+      <a class="text-primary border-b-2 border-primary pb-1 tracking-wide" href="#hero">Beranda</a>
+      <a class="hover:text-primary transition-colors tracking-wide" href="#layanan">Layanan</a>
+      <a class="hover:text-primary transition-colors tracking-wide" href="#alur">Alur Kerja</a>
+      <a class="hover:text-primary transition-colors tracking-wide" href="#faq">FAQ</a>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <!-- Server Status Badge -->
+      <div class="flex items-center gap-2 px-3 py-1.5 bg-white/90 border border-outline-variant/20 rounded-full text-[10px] font-bold text-on-surface-variant shadow-sm" id="statusBadge">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-yellow-500" id="statusDot"></span>
+        </span>
+        <span id="statusText">Menghubungkan...</span>
+      </div>
+
+      <button onclick="window.location.href='auth.html'" class="px-5 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:scale-[1.03] transition-all shadow-md shadow-primary/10 flex items-center gap-2">
+        <span>Masuk / Daftar</span>
+        <i class="fa-solid fa-right-to-bracket text-[10px]"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-[85vh] flex items-center py-20 overflow-hidden" id="hero">
+    <div class="container mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center gap-16 relative z-10">
+      
+      <div class="flex-1 text-center lg:text-left reveal active">
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container border border-secondary-container/50 font-bold text-xs mb-8">
+          <i class="fa-solid fa-sparkles text-[10px]"></i> Inovasi Administrasi Gampong Modern
+        </span>
+        <h1 class="font-display text-5xl lg:text-7xl font-extrabold text-primary tracking-tight leading-none mb-6">
+          Pelayanan Surat <br />
+          <span class="text-secondary">Satu Atap Digital</span>
+        </h1>
+        <p class="text-base text-on-surface-variant mb-10 max-w-xl leading-relaxed">
+          Urus berbagai kebutuhan administrasi kependudukan gampong secara online. Ajukan surat dari rumah, pantau verifikasi real-time, dan unduh dokumen resmi ber-TTE Anda secara instan.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <a href="#layanan" class="px-8 py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
+            <span>Cari Layanan Surat</span>
+            <i class="fa-solid fa-arrow-down text-sm"></i>
+          </a>
+          <button onclick="window.location.href='auth.html'" class="px-8 py-4 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary/5 transition-colors flex items-center justify-center gap-2">
+            <span>Mulai Ajukan</span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Hero Showcase: Simulator Panel -->
+      <div class="flex-1 w-full max-w-xl lg:max-w-none reveal active" style="transition-delay: 200ms;">
+        <div class="glass-card rounded-3xl p-6 relative overflow-hidden shadow-2xl border border-outline-variant/30 animate-float">
+          
+          <div class="flex items-center justify-between pb-4 border-b border-outline-variant/20 mb-6">
+            <div class="flex gap-2">
+              <span class="w-3.5 h-3.5 rounded-full bg-red-400"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-yellow-400"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-green-400"></span>
+            </div>
+            <span class="text-xs text-on-surface-variant font-mono">simulasi-pengajuan.sh</span>
+          </div>
+
+          <div class="space-y-6 font-mono text-xs text-on-surface" id="simulatorTerminal">
+            <!-- Step 1 -->
+            <div class="flex items-start gap-3 transition-all duration-300" id="simStep1">
+              <span class="text-primary font-bold">1</span>
+              <div>
+                <p class="text-primary font-bold flex items-center gap-2">
+                  <span>[Warga] Menyerahkan Data Form</span>
+                  <span class="inline-block w-2.5 h-4 bg-primary animate-pulse" id="simCursor"></span>
+                </p>
+                <p class="text-[10px] mt-1 text-on-surface-variant" id="simStep1Text">NIK: 1107*********** | Memilih Jenis: SKU</p>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="flex items-start gap-3 opacity-20 transition-all duration-300" id="simStep2">
+              <span class="text-primary font-bold">2</span>
+              <div>
+                <p class="text-primary font-bold">[Sistem] Mengunggah Lampiran</p>
+                <p class="text-[10px] mt-1 text-on-surface-variant" id="simStep2Text">KTP &amp; Kartu Keluarga terverifikasi (100%)</p>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="flex items-start gap-3 opacity-20 transition-all duration-300" id="simStep3">
+              <span class="text-primary font-bold">3</span>
+              <div>
+                <p class="text-primary font-bold">[Operator] Validasi Berkas Desa</p>
+                <p class="text-[10px] mt-1 text-secondary font-bold flex items-center gap-1" id="simStep3Text">
+                  <i class="fa-solid fa-circle-check"></i> Dokumen Sesuai Syarat Administrasi
+                </p>
+              </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="flex items-start gap-3 opacity-20 transition-all duration-300" id="simStep4">
+              <span class="text-primary font-bold">4</span>
+              <div>
+                <p class="text-secondary font-bold">[Selesai] Surat Diterbitkan Geuchik</p>
+                <div class="mt-4 p-3 bg-white/70 rounded-xl border border-outline-variant/30 flex items-center gap-4 shadow-sm">
+                  <div class="p-2.5 bg-primary rounded-lg text-white">
+                    <i class="fa-solid fa-qrcode text-2xl"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs text-primary font-bold">Surat Keterangan Usaha</p>
+                    <p class="text-[9px] text-on-surface-variant">No: SKU-2026/04-098</p>
+                  </div>
+                  <span class="ml-auto text-[10px] px-2.5 py-1 bg-secondary-container text-on-secondary-container border border-secondary-container/20 rounded-full font-bold">TTE OK</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-outline-variant/20 flex justify-center">
+            <button onclick="startSimulation()" class="px-5 py-2.5 bg-primary/10 text-primary border border-primary/20 rounded-xl text-xs font-bold hover:bg-primary hover:text-white transition-all flex items-center gap-2" id="btnSimulate">
+              <i class="fa-solid fa-play"></i> Simulasikan Alur
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-12 relative z-10 border-y border-outline-variant/20 bg-surface-container-low/40">
+    <div class="container mx-auto px-6 md:px-12">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="glass-card p-6 rounded-2xl text-center reveal border border-outline-variant/20">
+          <h3 class="font-display text-4xl font-extrabold text-primary mb-1" data-val="12450">0</h3>
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider">Surat Terbit</p>
+        </div>
+        <div class="glass-card p-6 rounded-2xl text-center reveal border border-outline-variant/20" style="transition-delay: 100ms;">
+          <h3 class="font-display text-4xl font-extrabold text-primary mb-1" data-val="15">0</h3>
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider">Jenis Layanan</p>
+        </div>
+        <div class="glass-card p-6 rounded-2xl text-center reveal border border-outline-variant/20" style="transition-delay: 200ms;">
+          <h3 class="font-display text-4xl font-extrabold text-primary mb-1" data-val="5">0</h3>
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider">Proses Verifikasi (Menit)</p>
+        </div>
+        <div class="glass-card p-6 rounded-2xl text-center reveal border border-outline-variant/20" style="transition-delay: 300ms;">
+          <h3 class="font-display text-4xl font-extrabold text-primary mb-1" data-val="99">0</h3>
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider">Kepuasan Warga (%)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Letter Search Section -->
+  <section class="py-28 relative z-10" id="layanan">
+    <div class="container mx-auto px-6 md:px-12">
+      
+      <div class="text-center mb-16 reveal">
+        <span class="text-xs font-bold text-primary tracking-widest uppercase mb-3 block">Direktori Surat</span>
+        <h2 class="font-display text-4xl md:text-5xl font-extrabold text-primary mb-4">
+          Cari &amp; Persiapkan <span class="text-secondary">Syarat Surat</span>
+        </h2>
+        <p class="text-on-surface-variant max-w-2xl mx-auto text-sm">
+          Ketik jenis surat yang ingin Anda ajukan di bawah ini untuk melihat pratinjau syarat pengisian data secara langsung sebelum masuk sistem.
+        </p>
+      </div>
+
+      <!-- Search Box -->
+      <div class="max-w-xl mx-auto mb-16 reveal">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-base"></i>
+          <input type="text" id="searchInput" oninput="filterTemplates()" placeholder="Cari surat... (Contoh: Usaha, Domisili, SKTM)" class="w-full pl-12 pr-4 py-4 bg-white/60 border border-outline-variant/30 rounded-2xl text-on-surface placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all text-sm font-semibold" />
+        </div>
+      </div>
+
+      <!-- Grid Templates -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto" id="templatesGrid">
+        <!-- Skeletons -->
+        <div class="animate-pulse glass-card p-6 rounded-2xl h-48 border border-outline-variant/20"></div>
+        <div class="animate-pulse glass-card p-6 rounded-2xl h-48 border border-outline-variant/20"></div>
+        <div class="animate-pulse glass-card p-6 rounded-2xl h-48 border border-outline-variant/20"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step-by-Step Flow (Bento Grid) -->
+  <section class="py-24 border-t border-outline-variant/20 bg-surface-container-low/40" id="alur">
+    <div class="container mx-auto px-6 md:px-12">
+      
+      <div class="text-center mb-16 reveal">
+        <span class="text-xs font-bold text-secondary tracking-widest uppercase mb-3 block">Alur Pengurusan</span>
+        <h2 class="font-display text-4xl md:text-5xl font-extrabold text-primary mb-4">4 Langkah Mudah Pengajuan</h2>
+        <p class="text-on-surface-variant max-w-2xl mx-auto text-sm">Tidak perlu antre panjang di kantor desa, selesaikan dokumen Anda dalam empat tahap mudah.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <!-- Step 1 -->
+        <div class="glass-card p-8 rounded-3xl border border-outline-variant/20 flex flex-col justify-between hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 reveal group">
+          <div>
+            <div class="text-primary/15 group-hover:text-primary/30 font-display font-black text-7xl mb-4 transition-colors">01</div>
+            <h4 class="font-display text-lg font-bold text-primary mb-3">Buat Akun / Login</h4>
+            <p class="text-on-surface-variant text-xs leading-relaxed">Gunakan NIK terdaftar Anda untuk masuk ke dashboard warga. Keamanan identitas terverifikasi.</p>
+          </div>
+        </div>
+        <!-- Step 2 -->
+        <div class="glass-card p-8 rounded-3xl border border-outline-variant/20 flex flex-col justify-between hover:border-secondary/30 hover:shadow-lg hover:shadow-secondary/5 transition-all duration-300 reveal group" style="transition-delay: 100ms;">
+          <div>
+            <div class="text-secondary/15 group-hover:text-secondary/30 font-display font-black text-7xl mb-4 transition-colors">02</div>
+            <h4 class="font-display text-lg font-bold text-primary mb-3">Pilih Jenis Surat</h4>
+            <p class="text-on-surface-variant text-xs leading-relaxed">Klik tombol pengajuan dan pilih template surat yang sesuai. Isi formulir digital singkat secara mandiri.</p>
+          </div>
+        </div>
+        <!-- Step 3 -->
+        <div class="glass-card p-8 rounded-3xl border border-outline-variant/20 flex flex-col justify-between hover:border-primary-container/30 hover:shadow-lg hover:shadow-primary-container/5 transition-all duration-300 reveal group" style="transition-delay: 200ms;">
+          <div>
+            <div class="text-primary-container/15 group-hover:text-primary-container/30 font-display font-black text-7xl mb-4 transition-colors">03</div>
+            <h4 class="font-display text-lg font-bold text-primary mb-3">Validasi Online</h4>
+            <p class="text-on-surface-variant text-xs leading-relaxed">Petugas operator gampong akan memvalidasi isian berkas Anda. Pantau status pengajuan langsung di HP Anda.</p>
+          </div>
+        </div>
+        <!-- Step 4 -->
+        <div class="glass-card p-8 rounded-3xl border border-outline-variant/20 flex flex-col justify-between hover:border-outline/30 hover:shadow-lg hover:shadow-outline/5 transition-all duration-300 reveal group" style="transition-delay: 300ms;">
+          <div>
+            <div class="text-outline/15 group-hover:text-outline/30 font-display font-black text-7xl mb-4 transition-colors">04</div>
+            <h4 class="font-display text-lg font-bold text-primary mb-3">Unduh Dokumen</h4>
+            <p class="text-on-surface-variant text-xs leading-relaxed">Begitu Geuchik membubuhkan tanda tangan (TTE), surat PDF digital siap diunduh dan dicetak mandiri.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="py-28 relative overflow-hidden bg-primary text-white">
+    <div class="absolute inset-0 opacity-10 hero-pattern"></div>
+    <div class="container mx-auto px-6 md:px-12 relative z-10">
+      
+      <div class="text-center mb-16 reveal">
+        <span class="text-xs font-bold text-secondary-fixed tracking-widest uppercase mb-3 block">Testimoni</span>
+        <h2 class="font-display text-4xl md:text-5xl font-extrabold text-white mb-4 text-center">Suara Warga Gampong</h2>
+        <p class="text-white/80 max-w-2xl mx-auto text-sm text-center">Bagaimana inovasi digital SiSurat membantu administrasi harian warga desa.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <!-- Testimonial 1 -->
+        <div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 flex flex-col justify-between reveal">
+          <div>
+            <div class="flex gap-1 text-yellow-300 mb-6">
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+            </div>
+            <p class="text-white text-sm italic leading-relaxed mb-8">
+              "Luar biasa praktis! Dulu harus bolak-balik ke kantor geuchik, sekarang buat Surat Keterangan Usaha tinggal isi form dari warung, sorenya berkas PDF sudah masuk."
+            </p>
+          </div>
+          <div class="flex items-center gap-4 pt-4 border-t border-white/10">
+            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-bold text-sm text-white">
+              MZ
+            </div>
+            <div>
+              <p class="text-sm font-bold text-white">Muzakkir</p>
+              <p class="text-[10px] text-white/70 font-bold uppercase">Warga Dusun Damai</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 flex flex-col justify-between reveal" style="transition-delay: 150ms;">
+          <div>
+            <div class="flex gap-1 text-yellow-300 mb-6">
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+            </div>
+            <p class="text-white text-sm italic leading-relaxed mb-8">
+              "Sangat membantu pelaku UMKM seperti saya. Urus keterangan domisili usaha tidak sampai 15 menit langsung disetujui operator. Tampilan websitenya keren dan bersih!"
+            </p>
+          </div>
+          <div class="flex items-center gap-4 pt-4 border-t border-white/10">
+            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-bold text-sm text-white">
+              MR
+            </div>
+            <div>
+              <p class="text-sm font-bold text-white">Moli Rahmi</p>
+              <p class="text-[10px] text-white/70 font-bold uppercase">Pelaku UMKM Kuliner</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 flex flex-col justify-between reveal" style="transition-delay: 300ms;">
+          <div>
+            <div class="flex gap-1 text-yellow-300 mb-6">
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+              <i class="fa-solid fa-star text-xs"></i>
+            </div>
+            <p class="text-white text-sm italic leading-relaxed mb-8">
+              "Kemudahan akses bagi kami yang merantau. Mengurus administrasi kepindahan atau surat keterangan miskin dari luar kota jadi tidak repot harus pulang kampung."
+            </p>
+          </div>
+          <div class="flex items-center gap-4 pt-4 border-t border-white/10">
+            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-bold text-sm text-white">
+              RH
+            </div>
+            <div>
+              <p class="text-sm font-bold text-white">Rahmat H.</p>
+              <p class="text-[10px] text-white/70 font-bold uppercase">Mahasiswa Rantau</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-24 border-t border-outline-variant/20 bg-surface-container-low/40" id="faq">
+    <div class="container mx-auto px-6 md:px-12">
+      <div class="max-w-3xl mx-auto">
+        
+        <div class="text-center mb-16 reveal">
+          <span class="text-xs font-bold text-secondary tracking-widest uppercase mb-3 block">Bantuan</span>
+          <h2 class="font-display text-4xl font-extrabold text-primary mb-4">Pertanyaan Umum Warga</h2>
+          <p class="text-on-surface-variant text-sm">Temukan jawaban atas kendala dan pertanyaan yang sering diajukan terkait sistem SiSurat.</p>
+        </div>
+
+        <div class="space-y-4">
+          <details class="glass-card rounded-2xl p-6 group reveal border border-outline-variant/20" open>
+            <summary class="flex justify-between items-center cursor-pointer">
+              <span class="font-semibold text-primary group-hover:text-secondary transition-colors text-sm md:text-base">Dokumen apa saja yang bisa saya ajukan secara digital?</span>
+              <i class="fa-solid fa-chevron-down text-xs text-on-surface-variant group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="mt-4 text-on-surface-variant text-xs md:text-sm leading-relaxed border-t border-outline-variant/20 pt-4">
+              Anda bisa mengajukan berbagai dokumen administratif, seperti Surat Keterangan Usaha (SKU), Surat Keterangan Tidak Mampu (SKTM/Miskin), Surat Keterangan Domisili, Surat Kuasa Keluarga, Surat Keterangan Luas Tanah, Surat Keterangan Bebas Pajak, hingga Surat Referensi Instansi. Semua jenis surat yang diaktifkan oleh operator gampong akan langsung muncul di halaman ini.
+            </p>
+          </details>
+
+          <details class="glass-card rounded-2xl p-6 group reveal border border-outline-variant/20">
+            <summary class="flex justify-between items-center cursor-pointer">
+              <span class="font-semibold text-primary group-hover:text-secondary transition-colors text-sm md:text-base">Apakah sistem ini aman dan sah secara hukum?</span>
+              <i class="fa-solid fa-chevron-down text-xs text-on-surface-variant group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="mt-4 text-on-surface-variant text-xs md:text-sm leading-relaxed border-t border-outline-variant/20 pt-4">
+              Sangat aman. Setiap akun wajib menggunakan verifikasi NIK yang terdaftar. Dokumen yang diterbitkan juga dilengkapi dengan QR Code verifikasi unik berbasis TTE (Tanda Tangan Elektronik) Geuchik, sehingga validitas dan keaslian dokumen dapat diverifikasi secara instan dengan memindai QR Code tersebut.
+            </p>
+          </details>
+
+          <details class="glass-card rounded-2xl p-6 group reveal border border-outline-variant/20">
+            <summary class="flex justify-between items-center cursor-pointer">
+              <span class="font-semibold text-primary group-hover:text-secondary transition-colors text-sm md:text-base">Berapa lama proses pembuatan surat?</span>
+              <i class="fa-solid fa-chevron-down text-xs text-on-surface-variant group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="mt-4 text-on-surface-variant text-xs md:text-sm leading-relaxed border-t border-outline-variant/20 pt-4">
+              Selama jam kerja operasional kantor desa (Senin - Jumat 08:00 - 16:00), rata-rata verifikasi berkas oleh operator dan persetujuan geuchik membutuhkan waktu sekitar 5 hingga 15 menit saja jika berkas persyaratan diisi dengan lengkap dan benar.
+            </p>
+          </details>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-outline-variant/20 w-full bg-surface-container-lowest pt-20 pb-10 px-6 md:px-12">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12 mb-16 text-xs">
+      
+      <div class="max-w-sm">
+        <div class="flex items-center gap-3 mb-6">
+          <img src="logo.png" alt="Logo" class="w-24 h-24 object-contain" />
+          <span class="font-display text-lg font-black text-primary">SiSurat Gampong</span>
+        </div>
+        <p class="text-on-surface-variant text-xs leading-relaxed">
+          Membangun tata kelola administrasi desa yang modern, efisien, dan inklusif. Urus kebutuhan dokumen kependudukan secara mandiri dengan verifikasi aman.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-12 w-full md:w-auto">
+        <div>
+          <h5 class="text-primary font-bold mb-4 uppercase tracking-wider text-[10px]">Tautan Layanan</h5>
+          <ul class="space-y-2.5 font-medium text-on-surface-variant">
+            <li><a class="hover:text-primary transition-colors" href="auth.html">Daftar Akun Baru</a></li>
+            <li><a class="hover:text-primary transition-colors" href="auth.html">Masuk Dashboard</a></li>
+            <li><a class="hover:text-primary transition-colors" href="#layanan">Cek Template Surat</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5 class="text-primary font-bold mb-4 uppercase tracking-wider text-[10px]">Informasi</h5>
+          <ul class="space-y-2.5 font-medium text-on-surface-variant">
+            <li><a class="hover:text-primary transition-colors" href="#faq">Pertanyaan Umum</a></li>
+            <li><a class="hover:text-primary transition-colors" href="#">Kebijakan Privasi</a></li>
+            <li><a class="hover:text-primary transition-colors" href="#">Syarat &amp; Ketentuan</a></li>
+          </ul>
+        </div>
+        <div class="col-span-2 md:col-span-1">
+          <h5 class="text-primary font-bold mb-4 uppercase tracking-wider text-[10px]">Kontak Resmi</h5>
+          <p class="text-on-surface-variant leading-relaxed mb-2">Kantor Geuchik, Jl. Keuchik Digital No. 01</p>
+          <p class="text-primary font-bold">admin@gampongdigital.id</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="max-w-6xl mx-auto pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-4 text-center text-xs text-on-surface-variant font-medium">
+      <p>© 2026 Pemerintah Gampong. Seluruh Hak Cipta Dilindungi.</p>
+      <div class="flex gap-4 text-sm">
+        <a class="w-8 h-8 rounded-lg bg-white border border-outline-variant/30 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-gray-50 transition-colors" href="#"><i class="fa-solid fa-envelope"></i></a>
+        <a class="w-8 h-8 rounded-lg bg-white border border-outline-variant/30 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-gray-50 transition-colors" href="#"><i class="fa-solid fa-phone"></i></a>
+        <a class="w-8 h-8 rounded-lg bg-white border border-outline-variant/30 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-gray-50 transition-colors" href="#"><i class="fa-solid fa-globe"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Details Modal Dialog -->
+  <div id="detailsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="glass-card max-w-lg w-full rounded-3xl p-8 border border-outline-variant/30 shadow-2xl relative transform translate-y-4 transition-transform duration-300">
+      <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 bg-black/5 hover:bg-black/10 text-on-surface-variant hover:text-on-surface rounded-xl transition-all flex items-center justify-center border border-outline-variant/20">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="flex items-center gap-3.5 mb-6">
+        <div class="w-12 h-12 bg-primary/10 text-primary border border-primary/20 rounded-2xl flex items-center justify-center">
+          <i class="fa-solid fa-file-lines text-lg"></i>
+        </div>
+        <div>
+          <span class="text-[9px] font-extrabold text-secondary tracking-widest uppercase" id="modalCategory">Administrasi</span>
+          <h3 class="text-xl font-display font-extrabold text-primary" id="modalTitle">Detail Surat</h3>
+        </div>
+      </div>
+      
+      <p class="text-on-surface-variant text-xs md:text-sm mb-6 leading-relaxed border-t border-outline-variant/25 pt-4" id="modalDescription">Deskripsi surat akan dimuat di sini.</p>
+      
+      <div class="mb-8">
+        <h4 class="text-[10px] font-bold text-primary uppercase tracking-widest mb-3 flex items-center gap-1.5">
+          <i class="fa-solid fa-list-check text-xs text-secondary"></i> Data Isian Wajib:
+        </h4>
+        <div class="flex flex-wrap gap-2" id="modalFields">
+          <!-- Fields populated dynamically -->
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <button onclick="closeModal()" class="flex-1 py-3 bg-white hover:bg-gray-50 border border-outline-variant/30 text-on-surface font-bold rounded-xl text-xs transition-all shadow-sm">
+          Tutup
+        </button>
+        <a href="auth.html" class="flex-1 py-3 bg-primary hover:scale-[1.02] text-white text-center font-bold rounded-xl text-xs transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2">
+          <span>Mulai Ajukan</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=2"></script>
+  <script>
+    // Reveal Scroll Effects
+    const observerOptions = {
+        threshold: 0.05,
+        rootMargin: '0px 0px -20px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                
+                // If it is the stats section, animate counts
+                if (entry.target.querySelector('[data-val]')) {
+                  animateNumbers();
+                }
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+    // Stats counter animation
+    let statsAnimated = false;
+    function animateNumbers() {
+      if (statsAnimated) return;
+      statsAnimated = true;
+      document.querySelectorAll('[data-val]').forEach(el => {
+        const target = parseInt(el.getAttribute('data-val'), 10);
+        let start = 0;
+        const duration = 1500;
+        const stepTime = Math.abs(Math.floor(duration / target));
+        
+        if (target > 500) {
+          let count = 0;
+          const interval = setInterval(() => {
+            count += Math.ceil(target / 30);
+            if (count >= target) {
+              el.innerText = target.toLocaleString('id-ID') + '+';
+              clearInterval(interval);
+            } else {
+              el.innerText = count.toLocaleString('id-ID');
+            }
+          }, 30);
+        } else {
+          const timer = setInterval(() => {
+            start++;
+            el.innerText = start + (target === 99 ? '%' : (target === 15 ? '+' : ''));
+            if (start >= target) clearInterval(timer);
+          }, Math.max(stepTime, 20));
+        }
+      });
+    }
+
+    // Dynamic field mapping template schema (aligns with app.js)
+    const fieldMapping = {
+      'izin usaha': ['Nama Usaha', 'Alamat Usaha', 'Jenis Usaha'],
+      'keterangan usaha': ['Nama Usaha', 'Alamat Usaha', 'Jenis Usaha / Bidang'],
+      'penghasilan': ['Jumlah Penghasilan Per Bulan', 'Instansi / Sumber Penghasilan'],
+      'mampu': ['Nama Orang Tua', 'Pekerjaan Orang Tua', 'Nama Anak', 'Instansi Sekolah', 'NPM / NISN'],
+      'sktm': ['Nama Orang Tua', 'Pekerjaan Orang Tua', 'Nama Anak', 'Instansi Sekolah', 'NPM / NISN'],
+      'miskin': ['Nama Orang Tua', 'Pekerjaan Orang Tua', 'Nama Anak', 'Instansi Sekolah', 'NPM / NISN'],
+      'keluarga': ['Nomor Kartu Keluarga (KK)', 'Nama Kepala Keluarga'],
+      'kk': ['Nomor Kartu Keluarga (KK)', 'Nama Kepala Keluarga'],
+      'tanah': ['Luas Tanah (m²)', 'Dusun / Lokasi Tanah', 'Batas Utara', 'Batas Selatan'],
+      'pajak': ['Tahun Pajak / Tahun SPT'],
+      'referensi': ['Instansi / Tujuan Referensi']
+    };
+
+    function getFields(name) {
+      const lower = name.toLowerCase();
+      for (const k in fieldMapping) {
+        if (lower.includes(k)) return fieldMapping[k];
+      }
+      return ['NIK Pemohon', 'Nama Pemohon', 'Keperluan Surat'];
+    }
+
+    // Local templates storage for offline fallback
+    let allTemplates = [
+      { id_jenis: 1, nama_jenis: 'Surat Keterangan Usaha (SKU)', deskripsi: 'Pernyataan resmi kepemilikan usaha aktif di wilayah Gampong.' },
+      { id_jenis: 2, nama_jenis: 'Surat Keterangan Tidak Mampu (SKTM)', deskripsi: 'Surat keterangan miskin untuk beasiswa atau bantuan kesejahteraan sosial.' },
+      { id_jenis: 3, nama_jenis: 'Surat Keterangan Domisili', deskripsi: 'Pernyataan resmi alamat tempat tinggal aktif warga di desa.' },
+      { id_jenis: 4, nama_jenis: 'Surat Kuasa Keluarga / KK', deskripsi: 'Untuk keperluan perwakilan pengurusan berkas administrasi keluarga.' },
+      { id_jenis: 5, nama_jenis: 'Surat Keterangan Luas Tanah', deskripsi: 'Pernyataan batas-batas kepemilikan tanah di wilayah gampong.' },
+      { id_jenis: 6, nama_jenis: 'Surat Bebas Pajak', deskripsi: 'Keterangan tidak memiliki tunggakan pajak bumi dan bangunan.' }
+    ];
+
+    // Load templates from API or fallback
+    async function loadLayananTemplates() {
+      const badge = document.getElementById('statusBadge');
+      const dot = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      
+      try {
+        const response = await fetch('http://localhost:3000/api/jenis-surat');
+        const r = await response.json();
+        
+        if (r.success && r.data && r.data.length > 0) {
+          allTemplates = r.data;
+          
+          badge.className = "flex items-center gap-2 px-3 py-1.5 bg-secondary-container/20 border border-secondary-container/50 rounded-full text-[10px] font-bold text-on-secondary-container shadow-sm";
+          dot.className = "relative inline-flex rounded-full h-2 w-2 bg-secondary";
+          text.textContent = "SISTEM ONLINE";
+        } else {
+          throw new Error('API Empty');
+        }
+      } catch (err) {
+        console.warn('Using offline fallback templates list:', err.message);
+        
+        badge.className = "flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[10px] font-bold text-amber-600 shadow-sm";
+        dot.className = "relative inline-flex rounded-full h-2 w-2 bg-amber-500";
+        text.textContent = "OFFLINE MODE";
+      }
+      
+      renderTemplates(allTemplates);
+    }
+
+    function renderTemplates(list) {
+      const grid = document.getElementById('templatesGrid');
+      if (!grid) return;
+      
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-on-surface-variant font-medium text-xs">
+            <i class="fa-solid fa-folder-open text-3xl mb-3 block text-primary"></i>
+            Tidak ada jenis surat yang ditemukan
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = list.map(item => {
+        const category = item.nama_jenis.toLowerCase().includes('usaha') ? 'Ekonomi' : 'Sosial';
+        const color = category === 'Ekonomi' ? 'text-on-secondary-container border-secondary-container/30 bg-secondary-container/40' : 'text-primary border-primary-fixed/20 bg-primary-fixed/30';
+        
+        return `
+          <div class="glass-card p-6 rounded-3xl border border-outline-variant/10 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-[9px] font-extrabold px-2.5 py-1 border rounded-full ${color}">${category.toUpperCase()}</span>
+                <i class="fa-solid fa-file-invoice text-primary-container group-hover:text-primary transition-colors text-sm"></i>
+              </div>
+              <h4 class="text-sm font-bold text-primary mb-2 leading-tight">${item.nama_jenis}</h4>
+              <p class="text-on-surface-variant text-[11px] leading-relaxed line-clamp-2 mb-6">${item.deskripsi || 'Tidak ada deskripsi tambahan untuk layanan ini.'}</p>
+            </div>
+            <button onclick="showDetails('${item.nama_jenis}', '${item.deskripsi || ''}', '${category}')" class="w-full py-2.5 bg-primary-fixed/30 hover:bg-primary text-primary hover:text-white border border-primary-fixed/20 hover:border-transparent text-[11px] font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Syarat &amp; Detail</span>
+              <i class="fa-solid fa-chevron-right text-[9px]"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Filter search input
+    function filterTemplates() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allTemplates.filter(t => t.nama_jenis.toLowerCase().includes(q) || (t.deskripsi && t.deskripsi.toLowerCase().includes(q)));
+      renderTemplates(filtered);
+    }
+
+    // Modal Control
+    function showDetails(title, desc, cat) {
+      const modal = document.getElementById('detailsModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalDescription = document.getElementById('modalDescription');
+      const modalCategory = document.getElementById('modalCategory');
+      const modalFields = document.getElementById('modalFields');
+
+      modalTitle.textContent = title;
+      modalDescription.textContent = desc || 'Pengurusan surat ini diproses penuh secara digital. Pastikan Anda mengisi form dengan data yang valid.';
+      modalCategory.textContent = cat;
+
+      const fields = getFields(title);
+      modalFields.innerHTML = fields.map(f => `
+        <span class="text-[10px] font-bold px-2.5 py-1 bg-surface-container text-on-surface-variant border border-outline-variant/20 rounded-lg flex items-center gap-1.5">
+          <i class="fa-solid fa-check text-[8px] text-secondary"></i> ${f}
+        </span>
+      `).join('');
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.firstElementChild.classList.remove('translate-y-4');
+      }, 50);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('detailsModal');
+      modal.firstElementChild.classList.add('translate-y-4');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 150);
+    }
+
+    // Interactive Hero Showcase Simulation
+    let currentSimStep = 1;
+    let simInterval = null;
+
+    function startSimulation() {
+      clearInterval(simInterval);
+      
+      const btn = document.getElementById('btnSimulate');
+      btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Simulasi Berjalan...`;
+      btn.disabled = true;
+
+      // Reset
+      document.getElementById('simStep1').className = "flex items-start gap-3 transition-all duration-300";
+      document.getElementById('simStep2').className = "flex items-start gap-3 opacity-20 transition-all duration-300";
+      document.getElementById('simStep3').className = "flex items-start gap-3 opacity-20 transition-all duration-300";
+      document.getElementById('simStep4').className = "flex items-start gap-3 opacity-20 transition-all duration-300";
+      
+      const cursor = document.getElementById('simCursor');
+      cursor.className = "inline-block w-2.5 h-4 bg-primary animate-pulse";
+      
+      currentSimStep = 1;
+
+      simInterval = setInterval(() => {
+        currentSimStep++;
+        if (currentSimStep === 2) {
+          cursor.className = "hidden";
+          document.getElementById('simStep2').className = "flex items-start gap-3 transition-all duration-300";
+        } else if (currentSimStep === 3) {
+          document.getElementById('simStep3').className = "flex items-start gap-3 transition-all duration-300";
+        } else if (currentSimStep === 4) {
+          document.getElementById('simStep4').className = "flex items-start gap-3 transition-all duration-300";
+          clearInterval(simInterval);
+          
+          btn.innerHTML = `<i class="fa-solid fa-rotate-left"></i> Ulangi Simulasi`;
+          btn.disabled = false;
+        }
+      }, 1500);
+    }
+
+    // Initial load
+    loadLayananTemplates();
+  </script>
+</body>
+</html>

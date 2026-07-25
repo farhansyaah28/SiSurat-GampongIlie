@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>SiSurat Gampong - Masuk Sistem</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#546B41',
+            secondary: '#99AD7A',
+            accent: '#DCCCAC',
+            base: '#FFF8EC',
+            dark: '#2d3b22'
+          },
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .mesh-gradient-bg {
+      background-color: #FFF8EC;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(220, 204, 172, 0.2) 0px, transparent 50%),
+        radial-gradient(at 50% 0%, rgba(153, 173, 122, 0.2) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(84, 107, 65, 0.12) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(255, 248, 236, 1) 0px, transparent 50%);
+    }
+
+    .blob-1 {
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(153, 173, 122, 0.35) 0%, rgba(153, 173, 122, 0) 70%);
+      filter: blur(50px);
+      animation: float-blob-1 12s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    .blob-2 {
+      position: absolute;
+      bottom: -10%;
+      right: -10%;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(220, 204, 172, 0.35) 0%, rgba(220, 204, 172, 0) 70%);
+      filter: blur(60px);
+      animation: float-blob-2 15s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    @keyframes float-blob-1 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 20px) scale(1.08); }
+    }
+
+    @keyframes float-blob-2 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-50px, -30px) scale(1.04); }
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 15px 45px rgba(84, 107, 65, 0.06);
+    }
+
+    .custom-input {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1.5px solid rgba(84, 107, 65, 0.12);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .custom-input:focus {
+      background: #ffffff;
+      border-color: #546B41;
+      box-shadow: 0 0 0 4px rgba(84, 107, 65, 0.08);
+    }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="mesh-gradient-bg min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
+
+  <!-- Background Decorative Blobs -->
+  <div class="blob-1"></div>
+  <div class="blob-2"></div>
+
+  <!-- Global Loader & Toast Integration -->
+  <div id="globalLoader" class="fixed inset-0 z-[100] hidden items-center justify-center bg-white/60 backdrop-blur-sm">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-primary border-b-4"></div>
+  </div>
+  
+  <div id="toast" class="fixed bottom-6 right-6 z-[100] transform translate-y-20 opacity-0 transition-all duration-300">
+    <div class="bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10">
+      <i class="fa-solid fa-circle-info text-secondary text-base"></i>
+      <span id="toastMsg" class="font-semibold text-xs md:text-sm"></span>
+    </div>
+  </div>
+
+  <!-- Login Container -->
+  <main class="relative z-10 w-full max-w-[420px] animate-fade-in py-6">
+    <!-- Back to home link -->
+    <div class="mb-4 text-left">
+      <a class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-primary transition-colors" href="index.html">
+        <i class="fa-solid fa-arrow-left text-[10px]"></i>
+        <span>Kembali ke Beranda</span>
+      </a>
+    </div>
+
+    <!-- Login Glass Card -->
+    <div class="glass-card rounded-2xl p-6 md:p-8 transition-all duration-500 transform hover:scale-[1.002]">
+      
+      <!-- Compact Horizontal Branding Header -->
+      <div class="flex items-center gap-3.5 mb-6">
+        <img src="logo.png" alt="Logo" class="w-24 h-24 object-contain cursor-pointer transition-transform hover:scale-105 active:scale-95 flex-shrink-0" onclick="window.location.href='index.html'" />
+        <div class="text-left">
+          <h1 class="text-xl font-extrabold text-primary tracking-tight leading-none mb-1">SiSurat Gampong</h1>
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sistem Administrasi Terpadu</p>
+        </div>
+      </div>
+
+      <!-- Tab Buttons (Sleeker & Shorter) -->
+      <div class="flex bg-gray-100/70 p-1 rounded-xl gap-1 mb-6">
+        <button id="tabBtnLogin" onclick="window.location.href='auth.html'" class="flex-1 py-1.5 font-bold text-primary bg-white rounded-lg shadow-sm transition-all text-xs">Masuk</button>
+        <button id="tabBtnRegister" onclick="window.location.href='register.html'" class="flex-1 py-1.5 font-semibold text-gray-500 hover:text-primary rounded-lg transition-all text-xs">Daftar Akun</button>
+      </div>
+
+      <!-- Login Form -->
+      <form class="space-y-4" id="loginForm">
+        <!-- Input Username/Email -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold text-gray-500 px-0.5" for="username">Username atau NIK (Email)</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"><i class="fa-regular fa-user"></i></span>
+            <input class="w-full pl-10 pr-4 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" id="username" name="email" placeholder="Masukkan Email/NIK" type="text" required />
+          </div>
+        </div>
+
+        <!-- Input Password -->
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center px-0.5">
+            <label class="text-[11px] font-bold text-gray-500" for="password">Kata Sandi</label>
+            <a class="text-[11px] font-bold text-primary hover:underline transition-all" href="#">Lupa sandi?</a>
+          </div>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"><i class="fa-solid fa-lock"></i></span>
+            <input class="w-full pl-10 pr-10 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" id="password" name="password" placeholder="••••••••" type="password" required />
+            <button class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors focus:outline-none" onclick="togglePassword('password', 'pwToggle')" type="button">
+              <span class="text-xs" id="pwToggle"><i class="fa-regular fa-eye"></i></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="flex items-center gap-2 px-0.5 pt-0.5">
+          <input class="w-3.5 h-3.5 text-primary bg-white border-gray-300 rounded focus:ring-primary/30 focus:ring-2 cursor-pointer" id="remember" type="checkbox"/>
+          <label class="text-[11px] font-bold text-gray-500 cursor-pointer select-none" for="remember">Ingat saya di perangkat ini</label>
+        </div>
+
+        <!-- Submit Button -->
+        <button class="w-full py-2.5 bg-gradient-to-r from-primary to-dark text-white font-bold text-sm rounded-xl shadow-md shadow-primary/20 hover:shadow-lg active:scale-[0.98] transition-all duration-300 mt-2 flex items-center justify-center gap-1.5" type="submit">
+          <span>Masuk Sistem</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      </form>
+
+      <!-- Footer Help link instead of giant section -->
+      <div class="mt-6 pt-4 border-t border-gray-100 text-center">
+        <p class="text-[11px] font-semibold text-gray-400">
+          Butuh bantuan? <a href="#" class="text-primary hover:underline font-bold">Hubungi Administrator</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Copyright Footer -->
+    <footer class="mt-5 text-center px-4">
+      <p class="text-[10px] font-semibold text-gray-400 leading-normal">
+        © 2026 Pemerintah Gampong. Seluruh Hak Cipta Dilindungi.
+        <br/>
+        Platform Keamanan Terenkripsi • v2.2.0
+      </p>
+    </footer>
+  </main>
+
+  <script src="app.js?v=2"></script>
+  <script>
+    function togglePassword(inputId = 'password', iconId = 'pwToggle') {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
+      } else {
+        input.type = 'password';
+        icon.innerHTML = '<i class="fa-regular fa-eye"></i>';
+      }
+    }
+
+    // Entrance Animation
+    window.addEventListener('DOMContentLoaded', () => {
+      const card = document.querySelector('.glass-card');
+      if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(15px)';
+        
+        setTimeout(() => {
+          card.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SiSurat Gampong - Daftar Warga</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#546B41', secondary: '#99AD7A', accent: '#DCCCAC', base: '#FFF8EC' },
+          fontFamily: { sans: ['Poppins', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .glass-card { @apply bg-white/60 backdrop-blur-sm border border-white/50 shadow hover:shadow-xl transition-all duration-300 rounded-2xl; }
+      .btn-primary { @apply bg-primary text-white px-6 py-2.5 rounded-xl hover:bg-[#3f5231] transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 font-medium flex items-center justify-center gap-2; }
+      .btn-outline { @apply border border-primary text-primary px-4 py-2 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 font-medium text-xs flex items-center justify-center gap-1.5; }
+      .btn-danger-outline { @apply border border-red-500 text-red-500 px-4 py-2 rounded-xl hover:bg-red-500 hover:text-white transition-all duration-300 font-medium text-xs flex items-center justify-center gap-1.5; }
+      .input-style { @apply w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-secondary focus:bg-white transition-all duration-300; }
+    }
+    .status-badge { @apply px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap; }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="bg-base font-sans text-gray-800 antialiased overflow-x-hidden">
+  <div id="globalLoader" class="fixed inset-0 z-50 hidden items-center justify-center bg-white/60 backdrop-blur-sm">
+    <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-primary border-b-4"></div>
+  </div>
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+    <div class="bg-gray-800 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3">
+       <i class="fa-solid fa-circle-info text-secondary"></i>
+       <span id="toastMsg" class="font-medium text-sm"></span>
+    </div>
+  </div>
+  
+  <section id="authLayout" class="flex h-screen bg-gray-50 overflow-hidden">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-white border-r border-gray-200 flex flex-col z-20 shadow-sm relative">
+         <div class="h-20 flex items-center px-6 border-b border-gray-100 cursor-pointer" onclick="window.location.href='dashboard.html'">
+            <img src="logo.png" alt="Logo" class="w-14 h-14 object-contain flex-shrink-0" />
+            <span class="ml-3 font-bold text-xl text-primary">SiSurat<span class="text-secondary">.</span></span>
+         </div>
+         
+         <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+            <div class="flex items-center gap-3">
+               <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow" id="userAvatar">U</div>
+               <div class="flex-1 overflow-hidden">
+                 <h4 class="font-bold text-sm text-gray-800 truncate" id="sideUserName">-</h4>
+                 <p class="text-xs text-primary font-medium truncate capitalize" id="sideUserRole">-</p>
+               </div>
+            </div>
+         </div>
+
+         <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-2">Menu Utama</div>
+            <a href="dashboard.html" data-menu="home" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+              <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+            </a>
+            <a href="pengajuan.html" data-menu="pengajuan" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+              <i class="fa-solid fa-pen-to-square w-5 text-center"></i> Buat Surat Baru
+            </a>
+            <a href="riwayat.html" data-menu="my" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+              <i class="fa-solid fa-folder-open w-5 text-center"></i> Pengajuan Saya
+            </a>
+            
+            <!-- Admin Menus -->
+            <div id="adminMenuContainer" class="hidden mt-6">
+              <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-2">Area Aparatur</div>
+              <a href="verifikasi.html" data-menu="admin" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-clipboard-check w-5 text-center"></i> Verifikasi Surat
+              </a>
+              <a href="surat-keluar.html" data-menu="suratkeluar" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-book w-5 text-center"></i> Buku Surat Keluar
+              </a>
+              <a href="template.html" data-menu="jenis" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-tags w-5 text-center"></i> Template Dokumen
+              </a>
+              <a href="audit-logs.html" data-menu="audit" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-list-check w-5 text-center"></i> Log Audit
+              </a>
+            </div>
+         </nav>
+         <div class="p-4 border-t border-gray-100">
+            <button id="btnLogout" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar Sistem
+            </button>
+         </div>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50">
+         <header class="h-20 bg-white/80 backdrop-blur border-b border-gray-100 flex items-center justify-between px-8 z-10 sticky top-0">
+            <h2 id="pageTitle" class="text-2xl font-bold text-gray-800">Daftar Warga</h2>
+         </header>
+
+         <main class="flex-1 overflow-x-hidden overflow-y-auto p-8">
+            <div class="max-w-6xl mx-auto glass-card bg-white overflow-hidden">
+               <!-- Header & Search -->
+               <div class="px-6 py-5 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/50">
+                  <div>
+                    <h3 class="font-bold text-lg text-gray-800">Direktori Penduduk Desa</h3>
+                    <p class="text-xs text-gray-500">Kelola biodata dan akun warga desa Gampong</p>
+                  </div>
+                  <div class="w-full md:w-80 relative">
+                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-400 text-sm"></i>
+                     <input type="text" id="wargaSearchInput" placeholder="Cari warga (Nama atau NIK)..." class="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:bg-white transition-all shadow-sm">
+                  </div>
+               </div>
+
+               <!-- Table -->
+               <div class="overflow-x-auto">
+                 <table class="w-full text-left border-collapse">
+                   <thead>
+                     <tr class="bg-gray-50 border-b border-gray-100">
+                       <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">NIK & Nama</th>
+                       <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Email/Kontak</th>
+                       <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">TTL & Gender</th>
+                       <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Agama & Pekerjaan</th>
+                       <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status Nikah</th>
+                       <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Alamat</th>
+                       <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                       <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Aksi</th>
+                     </tr>
+                   </thead>
+                   <tbody id="wargaTableBody" class="divide-y divide-gray-100">
+                     <!-- Populated by JS -->
+                   </tbody>
+                  </table>
+                </div>
+                <!-- Pagination Controls -->
+                <div class="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/50 text-xs font-semibold text-gray-500">
+                   <div class="flex items-center gap-2">
+                      <span>Tampilkan</span>
+                      <select id="entriesLimitSelect" class="bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-secondary">
+                         <option value="10" selected>10</option>
+                         <option value="25">25</option>
+                         <option value="50">50</option>
+                         <option value="100">100</option>
+                      </select>
+                      <span>entri</span>
+                   </div>
+                   <div id="paginationInfo">
+                      Menampilkan 0 - 0 dari 0 warga
+                   </div>
+                   <div class="flex items-center gap-2">
+                      <button id="btnPrevPage" class="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-white transition-colors flex items-center gap-1.5">
+                         <i class="fa-solid fa-angle-left"></i> Sebelumnya
+                      </button>
+                      <button id="btnNextPage" class="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-white transition-colors flex items-center gap-1.5">
+                         Berikutnya <i class="fa-solid fa-angle-right"></i>
+                      </button>
+                   </div>
+                </div>
+             </div>
+         </main>
+      </div>
+  </section>
+
+  <!-- Edit Citizen Modal -->
+  <div id="editWargaModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative animate-slide-up">
+      <div class="flex items-center justify-between border-b pb-3 mb-4">
+        <h3 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-user-pen text-primary mr-1.5"></i> Edit Biodata Warga</h3>
+        <button id="closeEditWargaModal" class="text-gray-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form id="editWargaForm" class="space-y-4">
+        <input type="hidden" name="id_user">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1">Nama Lengkap</label>
+            <input type="text" name="nama" class="input-style !py-2 !px-3 text-sm" required>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1">NIK</label>
+            <input type="text" name="nik" class="input-style !py-2 !px-3 text-sm" maxlength="16" required>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1">Email</label>
+            <input type="email" name="email" class="input-style !py-2 !px-3 text-sm" required>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1">Status Akun</label>
+            <select name="status" class="input-style !py-2 !px-3 text-sm">
+              <option value="aktif">Aktif</option>
+              <option value="nonaktif">Non-Aktif</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1">Tempat Lahir</label>
+            <input type="text" name="tempat_lahir" class="input-style !py-2 !px-3 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1">Tanggal Lahir</label>
+            <input type="date" name="tanggal_lahir" class="input-style !py-2 !px-3 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1">Jenis Kelamin</label>
+            <select name="jenis_kelamin" class="input-style !py-2 !px-3 text-sm">
+              <option value="">-- Pilih --</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1">Agama</label>
+            <select name="agama" class="input-style !py-2 !px-3 text-sm">
+              <option value="">-- Pilih --</option>
+              <option value="Islam">Islam</option>
+              <option value="Kristen">Kristen</option>
+              <option value="Katolik">Katolik</option>
+              <option value="Hindu">Hindu</option>
+              <option value="Budha">Budha</option>
+              <option value="Konghucu">Konghucu</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1">Pekerjaan</label>
+            <input type="text" name="pekerjaan" class="input-style !py-2 !px-3 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 mb-1">Status Perkawinan</label>
+            <select name="status_perkawinan" class="input-style !py-2 !px-3 text-sm">
+              <option value="">-- Pilih --</option>
+              <option value="Belum Kawin">Belum Kawin</option>
+              <option value="Kawin">Kawin</option>
+              <option value="Cerai Hidup">Cerai Hidup</option>
+              <option value="Cerai Mati">Cerai Mati</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-500 mb-1">Alamat Lengkap</label>
+          <textarea name="alamat" rows="2" class="input-style !py-2 !px-3 text-sm"></textarea>
+        </div>
+        <!-- KTP Warga Display in Edit Modal -->
+        <div id="editWargaKtpContainer" class="pt-2 border-t border-dashed border-gray-200">
+          <!-- Populated dynamically -->
+        </div>
+        <div class="flex justify-end gap-3 pt-3 border-t">
+          <button type="button" id="btnCancelEditWarga" class="px-5 py-2 text-sm font-medium border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">Batal</button>
+          <button type="submit" class="btn-primary !py-2 !px-5 text-sm">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reset Password Prompt Modal -->
+  <div id="resetPasswordPromptModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl relative animate-slide-up">
+      <div class="flex items-center justify-between border-b pb-3 mb-4">
+        <h3 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-key text-primary mr-1.5"></i> Reset Sandi Warga</h3>
+        <button id="closeResetPromptModal" class="text-gray-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form id="resetPasswordPromptForm" class="space-y-4">
+        <input type="hidden" name="id_user">
+        <div>
+          <label class="block text-xs font-bold text-gray-500 mb-1">Nama Warga</label>
+          <input type="text" id="resetWargaName" class="input-style !py-2 !px-3 text-sm bg-gray-50 text-gray-600 animate-pulse" readonly>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-500 mb-1">Kata Sandi Baru (Kustom)</label>
+          <input type="text" name="password" id="resetWargaPasswordInput" class="input-style !py-2 !px-3 text-sm font-mono" placeholder="Masukkan sandi baru" required>
+          <p class="text-[10px] text-gray-400 mt-1">Sandi default diusulkan otomatis. Anda dapat mengubahnya.</p>
+        </div>
+        <div class="flex justify-end gap-3 pt-3 border-t">
+          <button type="button" id="btnCancelResetPrompt" class="px-4 py-2 text-sm font-medium border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">Batal</button>
+          <button type="submit" class="btn-primary !py-2 !px-4 text-sm">Simpan Sandi Baru</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal Result -->
+  <div id="resetPasswordModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center animate-slide-up">
+      <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+         <i class="fa-solid fa-key"></i>
+      </div>
+      <h3 class="font-bold text-lg text-gray-800 mb-1">Sandi Berhasil Direset</h3>
+      <p class="text-xs text-gray-500 mb-4">Informasikan kata sandi baru ini kepada warga:</p>
+      
+      <div class="bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300 font-mono text-lg font-bold text-primary select-all mb-6" id="newPasswordDisplay">
+         -
+      </div>
+      
+      <button id="btnConfirmResetClose" class="w-full btn-primary !py-2.5">Tutup & Salin Sandi</button>
+    </div>
+  </div>
+
+  <script src="app.js?v=2"></script>
+</body>
+</html>

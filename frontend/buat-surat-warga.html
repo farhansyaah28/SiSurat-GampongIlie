@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SiSurat Gampong - Buat Surat Warga</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#546B41', secondary: '#99AD7A', accent: '#DCCCAC', base: '#FFF8EC' },
+          fontFamily: { sans: ['Poppins', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass-card {
+      background-color: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 1rem;
+    }
+    .glass-card:hover {
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+    .btn-primary {
+      background-color: #546B41;
+      color: #ffffff;
+      padding: 0.625rem 1.5rem;
+      border-radius: 0.75rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      background-color: #3f5231;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    }
+    .btn-primary:active {
+      transform: scale(0.95);
+    }
+    .btn-secondary {
+      background-color: #DCCCAC;
+      color: #1f2937;
+      padding: 0.625rem 1.5rem;
+      border-radius: 0.75rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      background-color: #cbb68d;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    }
+    .btn-secondary:active {
+      transform: scale(0.95);
+    }
+    .input-style {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.5);
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+    }
+    .input-style:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #99AD7A;
+      background-color: #ffffff;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="bg-base font-sans text-gray-800 antialiased overflow-x-hidden">
+  <div id="globalLoader" class="fixed inset-0 z-50 hidden items-center justify-center bg-white/60 backdrop-blur-sm">
+    <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-primary border-b-4"></div>
+  </div>
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+    <div class="bg-gray-800 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3">
+       <i class="fa-solid fa-circle-info text-secondary"></i>
+       <span id="toastMsg" class="font-medium text-sm"></span>
+    </div>
+  </div>
+  
+  <section id="authLayout" class="flex h-screen bg-gray-50 overflow-hidden">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-white border-r border-gray-200 flex flex-col z-20 shadow-sm">
+          <div class="h-20 flex items-center px-6 border-b border-gray-100 cursor-pointer" onclick="window.location.href='dashboard.html'">
+             <img src="logo.png" alt="Logo" class="w-14 h-14 object-contain flex-shrink-0" />
+             <span class="ml-3 font-bold text-xl text-primary">SiSurat<span class="text-secondary">.</span></span>
+          </div>
+         
+         <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+            <div class="flex items-center gap-3">
+               <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow" id="userAvatar">U</div>
+               <div class="flex-1 overflow-hidden">
+                 <h4 class="font-bold text-sm text-gray-800 truncate" id="sideUserName">-</h4>
+                 <p class="text-xs text-primary font-medium truncate capitalize" id="sideUserRole">-</p>
+               </div>
+            </div>
+         </div>
+
+         <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-2">Menu Utama</div>
+            <a href="dashboard.html" data-menu="home" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+              <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+            </a>
+            <a href="pengajuan.html" data-menu="pengajuan" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+              <i class="fa-solid fa-pen-to-square w-5 text-center"></i> Buat Surat Baru
+            </a>
+            <a href="riwayat.html" data-menu="my" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+              <i class="fa-solid fa-folder-open w-5 text-center"></i> Pengajuan Saya
+            </a>
+            
+            <!-- Admin Menus -->
+            <div id="adminMenuContainer" class="hidden mt-6">
+              <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-2">Area Aparatur</div>
+              <a href="verifikasi.html" data-menu="admin" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-clipboard-check w-5 text-center"></i> Verifikasi Surat
+              </a>
+              <a href="surat-keluar.html" data-menu="suratkeluar" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-book w-5 text-center"></i> Buku Surat Keluar
+              </a>
+              <a href="template.html" data-menu="jenis" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-tags w-5 text-center"></i> Template Dokumen
+              </a>
+              <a href="audit-logs.html" data-menu="audit" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-list-check w-5 text-center"></i> Log Audit
+              </a>
+            </div>
+         </nav>
+         <div class="p-4 border-t border-gray-100">
+            <button id="btnLogout" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar Sistem
+            </button>
+         </div>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50">
+         <header class="h-20 bg-white/80 backdrop-blur border-b border-gray-100 flex items-center justify-between px-8 z-10 sticky top-0">
+            <h2 id="pageTitle" class="text-2xl font-bold text-gray-800">Buat Surat Warga</h2>
+         </header>
+
+         <main class="flex-1 overflow-x-hidden overflow-y-auto p-8">
+            <section class="max-w-3xl mx-auto glass-card p-8 bg-white">
+              <h3 class="font-bold text-xl text-gray-800 mb-6 border-b pb-4">
+                <i class="fa-solid fa-user-plus text-primary mr-2"></i> Buat Surat atas nama Warga
+              </h3>
+              
+              <form id="onBehalfForm" class="space-y-6">
+                <!-- Checkbox Warga Baru -->
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" id="chkNewUser" name="is_new_user" value="true" class="w-4 h-4 text-primary focus:ring-primary rounded">
+                    <label for="chkNewUser" class="text-sm font-bold text-gray-700 select-none">Atau daftarkan warga baru (belum punya akun)</label>
+                  </div>
+                  <p class="text-xs text-gray-500 pl-6">
+                    <i class="fa-solid fa-circle-info text-primary mr-1"></i> Akun warga akan otomatis dibuat. Kata sandi default adalah <strong>Nama Depan + 3 digit terakhir NIK</strong> (contoh: <code>budi890</code>).
+                  </p>
+                </div>
+
+                <!-- Section Warga Terdaftar (Default) -->
+                <div id="existingUserSection">
+                  <label for="userSelect" class="block text-sm font-bold text-gray-700 mb-2">Pilih Warga Terdaftar</label>
+                  <select id="userSelect" name="id_user" class="input-style">
+                    <option value="">-- Pilih Warga --</option>
+                  </select>
+                </div>
+
+                <!-- Section Warga Baru (Hidden by default) -->
+                <div id="newUserSection" class="hidden space-y-4 bg-gray-50/50 p-6 rounded-2xl border border-gray-200">
+                  <h4 class="font-bold text-sm text-primary uppercase border-b pb-2 mb-4"><i class="fa-solid fa-id-card mr-1.5"></i> Biodata Lengkap Warga Baru</h4>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-xs font-bold text-gray-500 mb-1">Nama Lengkap</label>
+                      <input type="text" name="nama" class="input-style !py-2.5 !px-3" placeholder="Nama lengkap warga">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-500 mb-1">NIK (Nomor Induk Kependudukan)</label>
+                      <input type="text" name="nik" class="input-style !py-2.5 !px-3" placeholder="16 digit NIK" maxlength="16">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-500 mb-1">Tempat Lahir</label>
+                      <input type="text" name="tempat_lahir" class="input-style !py-2.5 !px-3" placeholder="Kota/Kabupaten">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-500 mb-1">Tanggal Lahir</label>
+                      <input type="date" name="tanggal_lahir" class="input-style !py-2.5 !px-3">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-500 mb-1">Jenis Kelamin</label>
+                      <select name="jenis_kelamin" class="input-style !py-2.5 !px-3">
+                        <option value="">-- Pilih --</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-500 mb-1">Agama</label>
+                      <select name="agama" class="input-style !py-2.5 !px-3">
+                        <option value="">-- Pilih --</option>
+                        <option value="Islam">Islam</option>
+                        <option value="Kristen">Kristen</option>
+                        <option value="Katolik">Katolik</option>
+                        <option value="Hindu">Hindu</option>
+                        <option value="Budha">Budha</option>
+                        <option value="Konghucu">Konghucu</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-500 mb-1">Pekerjaan</label>
+                      <input type="text" name="pekerjaan" class="input-style !py-2.5 !px-3" placeholder="Pekerjaan warga">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-500 mb-1">Status Perkawinan</label>
+                      <select name="status_perkawinan" class="input-style !py-2.5 !px-3">
+                        <option value="">-- Pilih --</option>
+                        <option value="Belum Kawin">Belum Kawin</option>
+                        <option value="Kawin">Kawin</option>
+                        <option value="Cerai Hidup">Cerai Hidup</option>
+                        <option value="Cerai Mati">Cerai Mati</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Alamat Lengkap</label>
+                    <textarea name="alamat" rows="2" class="input-style !py-2.5 !px-3" placeholder="Alamat lengkap tempat tinggal warga"></textarea>
+                  </div>
+                </div>
+
+                <!-- Section Detail Surat -->
+                <div class="space-y-4 border-t pt-4">
+                  <h4 class="font-bold text-sm text-primary uppercase border-b pb-2 mb-4"><i class="fa-solid fa-file-invoice mr-1.5"></i> Detail Surat</h4>
+                  
+                  <div>
+                    <label for="jenisSelect" class="block text-sm font-bold text-gray-700 mb-2">Jenis Layanan Surat</label>
+                    <select id="jenisSelect" name="id_jenis" class="input-style" required>
+                      <option value="">-- Pilih Jenis Surat --</option>
+                    </select>
+                  </div>
+                  <div id="syaratDokumenAlert" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-xs flex items-start gap-2.5 animate-fade-in">
+                    <i class="fa-solid fa-circle-exclamation text-amber-600 text-base mt-0.5"></i>
+                    <div>
+                      <span class="font-bold block text-sm">Dokumen Pendukung yang Disyaratkan untuk Surat ini:</span>
+                      <span id="syaratDokumenText" class="font-medium"></span>
+                    </div>
+                  </div>
+                  <!-- Container Input Dinamis per Surat -->
+                  <div id="dynamicFieldsContainer" class="hidden bg-gray-50/50 p-6 rounded-2xl border border-gray-200 space-y-4 animate-fade-in">
+                    <h4 class="font-bold text-sm text-primary uppercase border-b pb-2 mb-3"><i class="fa-solid fa-list-check mr-1.5"></i> Data Tambahan Surat</h4>
+                    <div id="dynamicFieldsBody" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                  </div>
+                  <div>
+                    <label for="keperluan" class="block text-sm font-bold text-gray-700 mb-2">Keperluan</label>
+                    <input type="text" id="keperluan" name="keperluan" class="input-style" placeholder="Contoh: Mengurus kelengkapan beasiswa" required>
+                  </div>
+                  <div>
+                    <label for="keterangan" class="block text-sm font-bold text-gray-700 mb-2">Keterangan Tambahan (Opsional)</label>
+                    <textarea id="keterangan" name="keterangan" rows="3" class="input-style" placeholder="Detail keterangan pendukung pengajuan surat"></textarea>
+                  </div>
+                  <div>
+                    <label id="uploadDocLabel" class="block text-sm font-bold text-gray-700 mb-2">Dokumen Pendukung (Foto KTP/KK/Surat Pengantar/Denah)</label>
+                    <div class="relative border-2 border-dashed border-gray-300 rounded-xl px-6 py-8 hover:bg-gray-50/50 transition-colors text-center cursor-pointer">
+                      <input type="file" id="fileInput" name="files" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,.pdf,.docx">
+                      <div class="space-y-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400"></i>
+                        <p id="fileNameDisplay" class="text-sm font-semibold text-gray-600">Klik atau seret file ke sini untuk mengunggah (Bisa pilih banyak file sekaligus)</p>
+                        <p class="text-xs text-gray-400">Mendukung format gambar (PNG, JPG), PDF, atau Word (Bisa pilih >1 file, Maks. 5 MB/file)</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                  <a href="dashboard.html" class="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors font-medium">Batal</a>
+                  <button type="submit" class="btn-primary">Kirim & Setujui Surat</button>
+                </div>
+              </form>
+            </section>
+         </main>
+      </div>
+  </section>
+
+  <script src="app.js?v=2"></script>
+</body>
+</html>

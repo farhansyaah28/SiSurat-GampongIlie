@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SiSurat Gampong - Buku Surat Keluar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#546B41', secondary: '#99AD7A', accent: '#DCCCAC', base: '#FFF8EC' },
+          fontFamily: { sans: ['Poppins', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .glass { @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-xl; }
+      .glass-card { @apply bg-white/60 backdrop-blur-sm border border-white/50 shadow hover:shadow-xl transition-all duration-300 rounded-2xl; }
+      .btn-primary { @apply bg-primary text-white px-6 py-2.5 rounded-xl hover:bg-[#3f5231] transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 font-medium flex items-center justify-center gap-2; }
+      .btn-outline { @apply border-2 border-primary text-primary px-6 py-2.5 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 font-medium; }
+      .input-style { @apply bg-white/50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:bg-white transition-all duration-300; }
+    }
+  </style>
+  <style>
+    @media print {
+      /* Hide all non-printable UI components */
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      #authLayout aside,
+      header,
+      .no-print,
+      #globalLoader,
+      #toast {
+        display: none !important;
+      }
+      #authLayout {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      #authLayout > div {
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      main {
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .glass-card {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-top: 15px;
+      }
+      th, td {
+        border: 1px solid #000 !important;
+        padding: 8px !important;
+        color: black !important;
+        font-size: 11px !important;
+      }
+      th {
+        background-color: #f3f4f6 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      /* Official government print header */
+      .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 25px;
+        border-bottom: 3px double #000;
+        padding-bottom: 10px;
+      }
+      .print-header h1 {
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin: 0;
+      }
+      .print-header h2 {
+        font-size: 14px;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin: 2px 0;
+      }
+      .print-header p {
+        font-size: 10px;
+        margin: 4px 0 0 0;
+        font-style: italic;
+      }
+    }
+    .print-header {
+      display: none;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="bg-base font-sans text-gray-800 antialiased overflow-x-hidden selection:bg-primary selection:text-white">
+  <div id="globalLoader" class="fixed inset-0 z-50 hidden items-center justify-center bg-white/60 backdrop-blur-sm">
+    <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-primary border-b-4"></div>
+  </div>
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+    <div class="bg-gray-800 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3">
+       <i class="fa-solid fa-circle-info text-secondary"></i>
+       <span id="toastMsg" class="font-medium text-sm"></span>
+    </div>
+  </div>
+  
+  <section id="authLayout" class="flex h-screen bg-gray-50 overflow-hidden">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-white border-r border-gray-200 flex flex-col transition-all duration-300 z-20 shadow-sm relative">
+          <div class="h-20 flex items-center px-6 border-b border-gray-100 cursor-pointer" onclick="window.location.href='dashboard.html'">
+            <img src="logo.png" alt="Logo" class="w-14 h-14 object-contain flex-shrink-0" />
+            <span class="ml-3 font-bold text-xl text-primary">SiSurat<span class="text-secondary">.</span></span>
+          </div>
+         
+         <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+            <div class="flex items-center gap-3">
+               <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow" id="userAvatar">U</div>
+               <div class="flex-1 overflow-hidden">
+                 <h4 class="font-bold text-sm text-gray-800 truncate" id="sideUserName">User Warga</h4>
+                 <p class="text-xs text-primary font-medium truncate capitalize" id="sideUserRole">warga</p>
+               </div>
+            </div>
+         </div>
+
+         <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-2">Menu Utama</div>
+            <a href="dashboard.html" data-menu="home" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+              <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+            </a>
+            <a href="pengajuan.html" data-menu="pengajuan" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+              <i class="fa-solid fa-pen-to-square w-5 text-center"></i> Buat Surat Baru
+            </a>
+            <a href="riwayat.html" data-menu="my" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+              <i class="fa-solid fa-folder-open w-5 text-center"></i> Pengajuan Saya
+            </a>
+            
+            <!-- Admin Menus -->
+            <div id="adminMenuContainer" class="hidden mt-6">
+              <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-2">Area Aparatur</div>
+              <a href="verifikasi.html" data-menu="admin" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-clipboard-check w-5 text-center"></i> Verifikasi Surat
+              </a>
+              <a href="surat-keluar.html" data-menu="suratkeluar" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-book w-5 text-center"></i> Buku Surat Keluar
+              </a>
+              <a href="template.html" data-menu="jenis" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-tags w-5 text-center"></i> Template Dokumen
+              </a>
+              <a href="audit-logs.html" data-menu="audit" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-list-check w-5 text-center"></i> Log Audit
+              </a>
+            </div>
+         </nav>
+         <div class="p-4 border-t border-gray-100">
+            <button id="btnLogout" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar Sistem
+            </button>
+         </div>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50 relative">
+         <header class="h-20 bg-white/80 backdrop-blur border-b border-gray-100 flex items-center justify-between px-8 z-10 sticky top-0">
+            <h2 id="pageTitle" class="text-2xl font-bold text-gray-800">Buku Surat Keluar</h2>
+            <div class="flex items-center gap-4">
+               <button class="w-10 h-10 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-primary hover:border-primary transition-colors flex items-center justify-center relative">
+                 <i class="fa-solid fa-bell"></i>
+                 <span class="absolute top-2 right-2 w-2.5 h-2.5 shadow bg-red-500 rounded-full border-2 border-white"></span>
+               </button>
+            </div>
+         </header>
+
+         <main class="flex-1 overflow-x-hidden overflow-y-auto p-8 relative">
+            <!-- Government Print Letterhead -->
+            <div class="print-header">
+              <h1>Pemerintah Kabupaten Gampong</h1>
+              <h2>Kecamatan Gampong Digital</h2>
+              <h2>Buku Agenda Surat Keluar (Arsip Resmi)</h2>
+              <p>Dicetak otomatis melalui Sistem Aplikasi SiSurat Gampong Digital</p>
+            </div>
+
+            <section class="dash-section animate-fade-in">
+              <div class="glass-card bg-white overflow-hidden p-6">
+                
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 no-print">
+                  <div>
+                    <h3 class="font-bold text-xl text-gray-800">Buku Agenda Surat Keluar</h3>
+                    <p class="text-sm text-gray-500">Daftar arsip seluruh dokumen resmi desa yang telah diterbitkan</p>
+                  </div>
+                  <button onclick="window.print()" class="btn-primary">
+                    <i class="fa-solid fa-print"></i> Cetak Agenda
+                  </button>
+                </div>
+
+                <!-- Filters panel (No-print) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50/70 border border-gray-100 rounded-xl no-print">
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Nomor Surat</label>
+                    <input type="text" id="filterNomor" oninput="filterSuratKeluar()" placeholder="Cari nomor surat..." class="input-style" />
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Nama Warga / NIK</label>
+                    <input type="text" id="filterWarga" oninput="filterSuratKeluar()" placeholder="Cari nama atau NIK..." class="input-style" />
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Jenis Surat</label>
+                    <input type="text" id="filterJenis" oninput="filterSuratKeluar()" placeholder="Cari jenis surat..." class="input-style" />
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Tanggal Terbit</label>
+                    <input type="date" id="filterTanggal" onchange="filterSuratKeluar()" class="input-style" />
+                  </div>
+                </div>
+
+                <!-- Tabular Log -->
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="bg-gray-50 border-b border-gray-150">
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider w-12">No</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Tanggal Keluar</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Nomor Surat</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Penerima / Pemohon</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Jenis Surat</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Keterangan / Detail</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center w-24 no-print">Berkas</th>
+                      </tr>
+                    </thead>
+                    <tbody id="suratKeluarTableBody">
+                      <!-- Loaded dynamically by loadSuratKeluarList() -->
+                      <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500 font-medium">
+                          <i class="fa-solid fa-spinner animate-spin text-xl mb-2 block"></i> Memuat agenda surat keluar...
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+            </section>
+         </main>
+      </div>
+  </section>
+
+  <script src="app.js?v=2"></script>
+</body>
+</html>

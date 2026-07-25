@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SiSurat Gampong - Verifikasi Surat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#546B41', secondary: '#99AD7A', accent: '#DCCCAC', base: '#FFF8EC' },
+          fontFamily: { sans: ['Poppins', 'sans-serif'] },
+          animation: { 
+            'fade-in': 'fadeIn 0.5s ease-out', 
+            'slide-up': 'slideUp 0.6s ease-out forwards', 
+            'float': 'floating 3s ease-in-out infinite' 
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            slideUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            floating: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } }
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .glass { @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-xl; }
+      .glass-card { @apply bg-white/60 backdrop-blur-sm border border-white/50 shadow hover:shadow-xl transition-all duration-300 rounded-2xl; }
+      .glass-dark { @apply bg-gray-900/80 backdrop-blur-md border border-gray-700/50 shadow-2xl; }
+      .btn-primary { @apply bg-primary text-white px-6 py-2.5 rounded-xl hover:bg-[#3f5231] transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 font-medium flex items-center justify-center gap-2; }
+      .btn-secondary { @apply bg-accent text-gray-800 px-6 py-2.5 rounded-xl hover:bg-[#cbb68d] transition-all duration-300 shadow hover:shadow-lg active:scale-95 font-medium flex items-center justify-center gap-2; }
+      .btn-outline { @apply border-2 border-primary text-primary px-6 py-2.5 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 font-medium; }
+      .btn-small { @apply px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-sm; }
+      .input-style { @apply w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-secondary focus:bg-white transition-all duration-300; }
+    }
+    .gradient-bg { background: linear-gradient(135deg, #FFF8EC 0%, #e8f0df 100%); }
+    .status-badge { @apply px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap; }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="bg-base font-sans text-gray-800 antialiased overflow-x-hidden selection:bg-primary selection:text-white">
+  <div id="globalLoader" class="fixed inset-0 z-50 hidden items-center justify-center bg-white/60 backdrop-blur-sm">
+    <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-primary border-b-4"></div>
+  </div>
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+    <div class="bg-gray-800 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3">
+       <i class="fa-solid fa-circle-info text-secondary"></i>
+       <span id="toastMsg" class="font-medium text-sm"></span>
+    </div>
+  </div>
+  
+  <section id="authLayout" class="flex h-screen bg-gray-50 overflow-hidden">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-white border-r border-gray-200 flex flex-col transition-all duration-300 z-20 shadow-sm relative">
+         <div class="h-20 flex items-center px-6 border-b border-gray-100 cursor-pointer" onclick="window.location.href='dashboard.html'">
+           <img src="logo.png" alt="Logo" class="w-14 h-14 object-contain flex-shrink-0" />
+           <span class="ml-3 font-bold text-xl text-primary">SiSurat<span class="text-secondary">.</span></span>
+         </div>
+         
+         <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+            <div class="flex items-center gap-3">
+               <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow" id="userAvatar">U</div>
+               <div class="flex-1 overflow-hidden">
+                 <h4 class="font-bold text-sm text-gray-800 truncate" id="sideUserName">User Warga</h4>
+                 <p class="text-xs text-primary font-medium truncate capitalize" id="sideUserRole">warga</p>
+               </div>
+            </div>
+         </div>
+
+         <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+           <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-2">Menu Utama</div>
+           <a href="dashboard.html" data-menu="home" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+             <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+           </a>
+           <a href="pengajuan.html" data-menu="pengajuan" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+             <i class="fa-solid fa-pen-to-square w-5 text-center"></i> Buat Surat Baru
+           </a>
+           <a href="riwayat.html" data-menu="my" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+             <i class="fa-solid fa-folder-open w-5 text-center"></i> Pengajuan Saya
+           </a>
+           
+           <!-- Admin Menus -->
+           <div id="adminMenuContainer" class="hidden mt-6">
+             <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-2">Area Aparatur</div>
+             <a href="verifikasi.html" data-menu="admin" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+               <i class="fa-solid fa-clipboard-check w-5 text-center"></i> Verifikasi Surat
+             </a>
+             <a href="surat-keluar.html" data-menu="suratkeluar" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+               <i class="fa-solid fa-book w-5 text-center"></i> Buku Surat Keluar
+             </a>
+             <a href="template.html" data-menu="jenis" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+               <i class="fa-solid fa-tags w-5 text-center"></i> Template Dokumen
+             </a>
+             <a href="audit-logs.html" data-menu="audit" class="dash-menu w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-100 transition-colors">
+               <i class="fa-solid fa-list-check w-5 text-center"></i> Log Audit
+             </a>
+           </div>
+         </nav>
+         <div class="p-4 border-t border-gray-100">
+            <button id="btnLogout" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar Sistem
+            </button>
+         </div>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50 relative">
+         <header class="h-20 bg-white/80 backdrop-blur border-b border-gray-100 flex items-center justify-between px-8 z-10 sticky top-0">
+           <h2 id="pageTitle" class="text-2xl font-bold text-gray-800">Verifikasi Surat</h2>
+           <div class="flex items-center gap-4">
+              <button class="w-10 h-10 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-primary hover:border-primary transition-colors flex items-center justify-center relative">
+                <i class="fa-solid fa-bell"></i>
+                <span class="absolute top-2 right-2 w-2.5 h-2.5 shadow bg-red-500 rounded-full border-2 border-white"></span>
+              </button>
+           </div>
+         </header>
+
+         <main class="flex-1 overflow-x-hidden overflow-y-auto p-8 relative">
+            <section id="dash-admin" class="dash-section animate-fade-in">
+              <div class="glass-card bg-white overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <h3 class="font-bold text-xl text-gray-800">Verifikasi & Persetujuan Surat</h3>
+                    <p class="text-sm text-gray-500">Kelola dan proses pengajuan surat dari warga desa</p>
+                  </div>
+                </div>
+                <!-- Filter Tabs -->
+                <div class="px-6 py-3 border-b border-gray-100 flex flex-wrap gap-2 bg-gray-50/50" id="adminFilterTabs">
+                  <button class="admin-tab-btn px-4 py-2 text-xs font-bold rounded-xl transition-all bg-primary text-white shadow-sm" data-status="all">Semua</button>
+                  <button class="admin-tab-btn px-4 py-2 text-xs font-bold rounded-xl transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-100" data-status="menunggu_verifikasi">Menunggu Verifikasi</button>
+                  <button class="admin-tab-btn px-4 py-2 text-xs font-bold rounded-xl transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-100" data-status="terverifikasi">Menunggu Persetujuan</button>
+                  <button class="admin-tab-btn px-4 py-2 text-xs font-bold rounded-xl transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-100" data-status="disetujui">Disetujui</button>
+                  <button class="admin-tab-btn px-4 py-2 text-xs font-bold rounded-xl transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-100" data-status="ditolak">Ditolak</button>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="bg-gray-50 border-b border-gray-100">
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Pemohon</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Jenis Surat</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Status</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Tindakan</th>
+                      </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                      <!-- Dynamic Rows -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+         </main>
+      </div>
+  </section>
+
+  <!-- Modal Detail & Tindakan Admin -->
+  <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/55 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl relative animate-slide-up">
+      <button onclick="hideModal()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3 class="text-xl font-bold text-gray-800 mb-6"><i class="fa-solid fa-circle-info text-primary mr-2"></i> Detail Pengajuan Surat</h3>
+      <div id="modalBody" class="max-h-[70vh] overflow-y-auto pr-2">
+        <!-- Dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="app.js?v=3"></script>
+</body>
+</html>

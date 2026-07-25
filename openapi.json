@@ -1,0 +1,22 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SiSurat Gampong API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register user",
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "201": { "description": "Created" } }
+      }
+    },
+    "/api/auth/login": {
+      "post": { "summary": "Login" }
+    },
+    "/api/jenis-surat": {
+      "get": { "summary": "List jenis surat" }
+    }
+  }
+}
