@@ -9,6 +9,7 @@ const fs = require('fs');
 const pool = require('../config/database');
 const { logAudit } = require('../utils/auditLogger');
 const sse = require('../config/sse');
+const { sendStatusNotification } = require('../utils/waNotifier');
 
 function terbilang(nilai) {
   nilai = Math.floor(Math.abs(nilai));
@@ -261,6 +262,12 @@ class PengajuanController {
       // Broadcast to real-time clients
       sse.broadcast('new_pengajuan', { id_pengajuan });
 
+      // Kirim Notifikasi WA ke Warga
+      try {
+        const fullPengajuan = await PengajuanSurat.findById(id_pengajuan);
+        if (fullPengajuan) sendStatusNotification(fullPengajuan, targetStatus);
+      } catch(e) { console.error('WA Notif error:', e); }
+
       res.status(201).json({
         success: true,
         message: targetStatus === 'disetujui' 
@@ -404,6 +411,12 @@ class PengajuanController {
       // Broadcast to real-time clients
       sse.broadcast('status_update', { id_pengajuan: id, status });
 
+      // Kirim Notifikasi WA ke Warga
+      try {
+        const fullPengajuan = await PengajuanSurat.findById(id);
+        if (fullPengajuan) sendStatusNotification(fullPengajuan, status, catatan_ditolak);
+      } catch(e) { console.error('WA Notif error:', e); }
+
       res.status(200).json({
         success: true,
         message: 'Pengajuan berhasil diverifikasi'
@@ -455,6 +468,12 @@ class PengajuanController {
       // Broadcast to real-time clients
       sse.broadcast('status_update', { id_pengajuan: id, status: 'disetujui' });
 
+      // Kirim Notifikasi WA ke Warga
+      try {
+        const fullPengajuan = await PengajuanSurat.findById(id);
+        if (fullPengajuan) sendStatusNotification(fullPengajuan, 'disetujui');
+      } catch(e) { console.error('WA Notif error:', e); }
+
       res.status(200).json({
         success: true,
         message: 'Surat berhasil disetujui dan PDF otomatis terbuat',
@@ -499,6 +518,12 @@ class PengajuanController {
 
       // Broadcast to real-time clients
       sse.broadcast('status_update', { id_pengajuan: id, status: 'ditolak' });
+
+      // Kirim Notifikasi WA ke Warga
+      try {
+        const fullPengajuan = await PengajuanSurat.findById(id);
+        if (fullPengajuan) sendStatusNotification(fullPengajuan, 'ditolak', catatan_ditolak);
+      } catch(e) { console.error('WA Notif error:', e); }
 
       res.status(200).json({
         success: true,

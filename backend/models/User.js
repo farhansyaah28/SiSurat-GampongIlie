@@ -3,14 +3,14 @@ const bcrypt = require('bcryptjs');
 
 class User {
   static async create(userData) {
-    const { nama, nik, email, password, role, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp } = userData;
+    const { nama, nik, email, password, role, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp } = userData;
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const [rows] = await pool.execute(
       `INSERT INTO users 
-       (nama, nik, email, password, role, status, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id_user`,
-      [nama, nik, email, hashedPassword, role, 'aktif', tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, foto_ktp || null]
+       (nama, nik, email, password, role, status, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id_user`,
+      [nama, nik, email, hashedPassword, role, 'aktif', no_hp || '081234567890', tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, foto_ktp || null]
     );
     
     return { insertId: rows[0].id_user };
