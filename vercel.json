@@ -3,7 +3,13 @@
   "builds": [
     {
       "src": "backend/app.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "backend/logo_surat.png",
+          "backend/letterhead_template.png"
+        ]
+      }
     },
     {
       "src": "frontend/**",
