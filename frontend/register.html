@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="overflow-x-hidden">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -91,11 +91,13 @@
   </style>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="mesh-gradient-bg min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
+<body class="mesh-gradient-bg min-h-screen flex items-center justify-center p-4 relative overflow-y-auto overflow-x-hidden">
 
   <!-- Background Decorative Blobs -->
-  <div class="blob-1"></div>
-  <div class="blob-2"></div>
+  <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+  </div>
 
   <!-- Global Loader & Toast Integration -->
   <div id="globalLoader" class="fixed inset-0 z-[100] hidden items-center justify-center bg-white/60 backdrop-blur-sm">
@@ -110,7 +112,7 @@
   </div>
 
   <!-- Register Container -->
-  <main class="relative z-10 w-full max-w-[620px] animate-fade-in py-6">
+  <main class="relative z-10 w-full max-w-[620px] px-3 sm:px-0 animate-fade-in py-6">
     <!-- Back to home link -->
     <div class="mb-4 text-left">
       <a class="inline-flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-primary transition-colors" href="index.html">
@@ -120,23 +122,23 @@
     </div>
 
     <!-- Register Glass Card -->
-    <div class="glass-card rounded-2xl p-6 md:p-8 transition-all duration-500 transform hover:scale-[1.002]">
+    <div class="glass-card rounded-2xl p-5 sm:p-8 transition-all duration-500 transform hover:scale-[1.002]">
       
       <!-- Compact Horizontal Branding Header -->
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <img src="logo.png" alt="Logo" class="w-24 h-24 object-contain cursor-pointer flex-shrink-0" onclick="window.location.href='index.html'" />
+      <div class="flex items-center justify-between gap-3 mb-6">
+        <div class="flex items-center gap-2 sm:gap-3">
+          <img src="logo.png" alt="Logo" class="w-12 h-12 sm:w-16 sm:h-16 object-contain cursor-pointer flex-shrink-0" onclick="window.location.href='index.html'" />
           <div class="text-left">
-            <h1 class="text-xl font-extrabold text-primary tracking-tight leading-none mb-1">SiSurat Gampong</h1>
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Administrasi Digital Terpadu</p>
+            <h1 class="text-base sm:text-xl font-extrabold text-primary tracking-tight leading-none mb-1">SiSurat Gampong</h1>
+            <p class="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">Administrasi Digital Terpadu</p>
           </div>
         </div>
 
         <!-- Stepper Indicator -->
-        <div class="flex items-center gap-2">
-          <div id="stepIndicator1" class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs bg-primary text-white shadow-md shadow-primary/20 transition-all duration-300">1</div>
-          <div class="w-6 h-0.5 bg-gray-200"></div>
-          <div id="stepIndicator2" class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs bg-gray-100 text-gray-400 border border-gray-200 transition-all duration-300">2</div>
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <div id="stepIndicator1" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-bold text-xs bg-primary text-white shadow-md shadow-primary/20 transition-all duration-300">1</div>
+          <div class="w-4 h-0.5 sm:w-6 bg-gray-200"></div>
+          <div id="stepIndicator2" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-bold text-xs bg-gray-100 text-gray-400 border border-gray-200 transition-all duration-300">2</div>
         </div>
       </div>
 
