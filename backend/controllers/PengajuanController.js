@@ -58,7 +58,7 @@ class PengajuanController {
           const nik = user ? user.nik : 'unknown';
           const fs = require('fs');
           const path = require('path');
-          const uploadDir = path.join(__dirname, '../uploads');
+          const uploadDir = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, '../uploads');
           if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
           }
@@ -581,8 +581,7 @@ class PengajuanController {
       throw new Error('Hanya pengajuan yang disetujui yang dapat dicetak');
     }
 
-    // Siapkan nama file dan direktori
-    const uploadsDir = path.join(__dirname, '..', 'uploads');
+    const uploadsDir = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, '..', 'uploads');
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
     const fileName = `surat_${id}_${Date.now()}.pdf`;
     const filePath = path.join(uploadsDir, fileName);
