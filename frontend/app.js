@@ -1,4 +1,6 @@
-const apiBase = 'http://localhost:3000/api';
+const apiBase = (window.location.port === '5500' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'))
+  ? `http://${window.location.hostname}:3000/api`
+  : `${window.location.origin}/api`;
 const serverBase = apiBase.replace(/\/api$/, '');
 
 function el(q) { return document.querySelector(q); }
