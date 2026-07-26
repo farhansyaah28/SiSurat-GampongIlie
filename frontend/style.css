@@ -41,4 +41,13 @@ input, textarea {
   #authLayout aside.active {
     transform: translateX(0) !important;
   }
+  
+  #authLayout header {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  #authLayout main {
+    padding: 1rem !important;
+  }
 }

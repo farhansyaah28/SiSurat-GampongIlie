@@ -698,8 +698,11 @@ async function refreshProfile(){
        if (path.includes('daftar-warga.html')) loadWargaList();
        if (path.includes('surat-keluar.html')) loadSuratKeluarList();
        
-       // Start real-time updates
-       initRealtime();
+        // Setup Mobile Responsive Sidebar
+        setupMobileSidebar();
+        
+        // Start real-time updates
+        initRealtime();
      }
   } else { 
      localStorage.removeItem('token');
@@ -2363,5 +2366,50 @@ function triggerRealtimeReloads() {
   if (path.includes('riwayat.html')) {
     console.log('[Realtime] Reloading citizen requests silently...');
     loadMyPengajuan(true);
+  }
+}
+
+// --- MOBILE SIDEBAR DYNAMIC SETUP ---
+function setupMobileSidebar() {
+  const aside = document.querySelector('#authLayout aside');
+  const header = document.querySelector('#authLayout header');
+  if (aside && header && !document.getElementById('mobileMenuBtn')) {
+    // Create hamburger button
+    const btn = document.createElement('button');
+    btn.id = 'mobileMenuBtn';
+    btn.type = 'button';
+    btn.className = 'md:hidden p-2 text-gray-500 hover:text-primary transition-colors focus:outline-none mr-2 flex items-center justify-center';
+    btn.innerHTML = '<i class="fa-solid fa-bars text-xl"></i>';
+    
+    // Prepend to header
+    header.insertBefore(btn, header.firstChild);
+    
+    // Create backdrop
+    let backdrop = document.getElementById('sidebarBackdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'sidebarBackdrop';
+      backdrop.className = 'fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden';
+      document.body.appendChild(backdrop);
+    }
+    
+    // Toggle logic
+    btn.addEventListener('click', () => {
+      aside.classList.toggle('active');
+      backdrop.classList.toggle('hidden');
+    });
+    
+    backdrop.addEventListener('click', () => {
+      aside.classList.remove('active');
+      backdrop.classList.add('hidden');
+    });
+
+    // Close on navigation click
+    aside.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        aside.classList.remove('active');
+        backdrop.classList.add('hidden');
+      });
+    });
   }
 }
