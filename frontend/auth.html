@@ -245,12 +245,10 @@
       
       showLoader();
       try {
-        const response = await fetch('/api/auth/forgot-password', {
+        const r = await apiFetch('/auth/forgot-password', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nik })
+          body: { nik }
         });
-        const r = await response.json();
         hideLoader();
         if (r.success) {
           showToast(r.message);
@@ -286,12 +284,10 @@
       
       showLoader();
       try {
-        const response = await fetch('/api/auth/reset-password', {
+        const r = await apiFetch('/auth/reset-password', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nik, otp, newPassword })
+          body: { nik, otp, newPassword }
         });
-        const r = await response.json();
         hideLoader();
         if (r.success) {
           showToast(r.message);
