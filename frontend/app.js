@@ -1605,6 +1605,10 @@ function showProfileModal(userData) {
             <label class="text-[11px] font-bold text-gray-500">Nama Lengkap</label>
             <input class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:bg-white" name="nama" type="text" required />
           </div>
+          <div class="space-y-1">
+            <label class="text-[11px] font-bold text-gray-500">Nomor WhatsApp / HP</label>
+            <input class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:bg-white" name="no_hp" type="text" placeholder="081234567890" />
+          </div>
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
               <label class="text-[11px] font-bold text-gray-500">Tempat Lahir</label>
@@ -1709,6 +1713,7 @@ function showProfileModal(userData) {
   const form = document.getElementById('profileForm');
   form.elements['nik'].value = userData.nik || 'Tidak ada NIK';
   form.elements['nama'].value = userData.nama || '';
+  if (form.elements['no_hp']) form.elements['no_hp'].value = userData.no_hp || '';
   form.elements['tempat_lahir'].value = userData.tempat_lahir || '';
   if (userData.tanggal_lahir) {
     form.elements['tanggal_lahir'].value = userData.tanggal_lahir.substring(0, 10);
@@ -2048,6 +2053,7 @@ window.openEditWargaModal = function(id) {
   form.elements['nama'].value = warga.nama || '';
   form.elements['nik'].value = warga.nik || '';
   form.elements['email'].value = warga.email || '';
+  if (form.elements['no_hp']) form.elements['no_hp'].value = warga.no_hp || '';
   form.elements['status'].value = warga.status || 'aktif';
   form.elements['tempat_lahir'].value = warga.tempat_lahir || '';
   form.elements['tanggal_lahir'].value = warga.tanggal_lahir ? warga.tanggal_lahir.substring(0, 10) : '';

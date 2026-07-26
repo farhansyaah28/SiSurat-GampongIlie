@@ -18,7 +18,7 @@ class UsersController {
     try {
       const { id } = req.params;
       const actor = req.user;
-      const { nama, nik, email, status, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = req.body;
+      const { nama, nik, email, status, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = req.body;
 
       if (!nama || !nik || !email) {
         return res.status(400).json({ success: false, message: 'Nama, NIK, dan Email harus diisi' });
@@ -47,6 +47,7 @@ class UsersController {
         nik,
         email,
         status: status || 'aktif',
+        no_hp,
         tempat_lahir,
         tanggal_lahir,
         jenis_kelamin,

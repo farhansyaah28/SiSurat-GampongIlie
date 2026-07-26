@@ -34,7 +34,7 @@ class User {
 
   static async findById(id) {
     const [rows] = await pool.execute(
-      `SELECT id_user, nama, nik, email, role, status, created_at, 
+      `SELECT id_user, nama, nik, email, role, status, no_hp, created_at, 
               tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp 
        FROM users WHERE id_user = ?`,
       [id]
@@ -43,10 +43,11 @@ class User {
   }
 
   static async updateProfile(id, profileData) {
-    const { nama, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = profileData;
+    const { nama, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = profileData;
     const [result] = await pool.execute(
       `UPDATE users SET 
         nama = ?, 
+        no_hp = ?,
         tempat_lahir = ?, 
         tanggal_lahir = ?, 
         jenis_kelamin = ?, 
@@ -56,13 +57,13 @@ class User {
         alamat = ?,
         updated_at = CURRENT_TIMESTAMP 
        WHERE id_user = ?`,
-      [nama, tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, id]
+      [nama, no_hp || '081234567890', tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, id]
     );
     return result;
   }
 
   static async getAll(role = null) {
-    let query = 'SELECT id_user, nama, nik, email, role, status, created_at, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp FROM users';
+    let query = 'SELECT id_user, nama, nik, email, role, status, no_hp, created_at, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp FROM users';
     const params = [];
     
     if (role) {
@@ -84,13 +85,14 @@ class User {
   }
 
   static async updateUserByAdmin(id, userData) {
-    const { nama, nik, email, status, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = userData;
+    const { nama, nik, email, status, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = userData;
     const [result] = await pool.execute(
       `UPDATE users SET 
         nama = ?, 
         nik = ?, 
         email = ?, 
         status = ?, 
+        no_hp = ?,
         tempat_lahir = ?, 
         tanggal_lahir = ?, 
         jenis_kelamin = ?, 
@@ -100,7 +102,7 @@ class User {
         alamat = ?, 
         updated_at = CURRENT_TIMESTAMP 
        WHERE id_user = ?`,
-      [nama, nik, email, status, tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, id]
+      [nama, nik, email, status, no_hp || '081234567890', tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, id]
     );
     return result;
   }

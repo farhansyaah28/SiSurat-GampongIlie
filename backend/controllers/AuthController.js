@@ -5,7 +5,7 @@ const { logAudit } = require('../utils/auditLogger');
 class AuthController {
   static async register(req, res) {
     try {
-      const { nama, nik, email, password, confirmPassword, role, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp_base64 } = req.body;
+      const { nama, nik, email, password, confirmPassword, role, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp_base64 } = req.body;
 
       // Validasi
       if (!nama || !nik || !email || !password || !confirmPassword) {
@@ -14,7 +14,6 @@ class AuthController {
           message: 'Semua field harus diisi'
         });
       }
-
       if (password !== confirmPassword) {
         return res.status(400).json({
           success: false,
@@ -78,6 +77,7 @@ class AuthController {
         email,
         password,
         role: role || 'warga',
+        no_hp: no_hp || '081234567890',
         tempat_lahir,
         tanggal_lahir: tanggal_lahir || null,
         jenis_kelamin,
@@ -224,7 +224,7 @@ class AuthController {
   static async updateProfile(req, res) {
     try {
       const { id_user } = req.user;
-      const { nama, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, password } = req.body;
+      const { nama, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, password } = req.body;
 
       if (!nama) {
         return res.status(400).json({
@@ -235,6 +235,7 @@ class AuthController {
 
       const profileData = {
         nama,
+        no_hp,
         tempat_lahir,
         tanggal_lahir: tanggal_lahir || null,
         jenis_kelamin,
