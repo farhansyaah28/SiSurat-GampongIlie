@@ -19,6 +19,9 @@ class UsersController {
       const { id } = req.params;
       const actor = req.user;
       const { nama, nik, email, status, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = req.body;
+      console.log('--- DEBUG updateUserByAdmin ---');
+      console.log('req.body:', req.body);
+      console.log('no_hp:', no_hp);
 
       if (!nama || !nik || !email) {
         return res.status(400).json({ success: false, message: 'Nama, NIK, dan Email harus diisi' });

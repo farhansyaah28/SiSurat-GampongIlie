@@ -17,7 +17,7 @@ class PengajuanSurat {
   static async findById(id) {
     const [rows] = await pool.execute(
       `SELECT ps.*, js.nama_jenis, js.template_file, js.custom_fields, js.body_template, 
-              u.nama as nama_pemohon, u.nik, u.tempat_lahir, u.tanggal_lahir, 
+              u.nama as nama_pemohon, u.nik, u.no_hp, u.tempat_lahir, u.tanggal_lahir, 
               u.jenis_kelamin, u.pekerjaan, u.status_perkawinan, u.agama, u.alamat, u.foto_ktp
        FROM pengajuan_surat ps
        JOIN jenis_surat js ON ps.id_jenis = js.id_jenis

@@ -225,6 +225,9 @@ class AuthController {
     try {
       const { id_user } = req.user;
       const { nama, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, password } = req.body;
+      console.log('--- DEBUG updateProfile ---');
+      console.log('req.body:', req.body);
+      console.log('no_hp:', no_hp);
 
       if (!nama) {
         return res.status(400).json({
