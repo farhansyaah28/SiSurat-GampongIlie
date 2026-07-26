@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { logAudit } = require('../utils/auditLogger');
+const { sendResetOtpNotification } = require('../utils/waNotifier');
 
 class AuthController {
   static async register(req, res) {
@@ -275,6 +276,79 @@ class AuthController {
         message: 'Terjadi kesalahan saat memperbarui profil',
         error: error.message
       });
+    }
+  }
+
+  static async forgotPassword(req, res) {
+    try {
+      const { nik } = req.body;
+      if (!nik) {
+        return res.status(400).json({ success: false, message: 'NIK wajib diisi' });
+      }
+
+      const user = await User.findByNIK(nik);
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'Warga dengan NIK tersebut tidak ditemukan' });
+      }
+
+      // Generate 6-digit OTP
+      const otp = (100000 + Math.floor(Math.random() * 900000)).toString();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+
+      await User.setResetOtp(user.id_user, otp, expiresAt);
+      await sendResetOtpNotification(user.no_hp, user.nama, otp);
+
+      res.status(200).json({
+        success: true,
+        message: 'Kode OTP berhasil dikirim ke nomor WhatsApp Anda'
+      });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({ success: false, message: 'Terjadi kesalahan saat meminta reset kata sandi' });
+    }
+  }
+
+  static async resetPassword(req, res) {
+    try {
+      const { nik, otp, newPassword } = req.body;
+      if (!nik || !otp || !newPassword) {
+        return res.status(400).json({ success: false, message: 'Semua field wajib diisi' });
+      }
+
+      const user = await User.findByNIK(nik);
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'User tidak ditemukan' });
+      }
+
+      if (!user.reset_otp || user.reset_otp !== otp) {
+        return res.status(400).json({ success: false, message: 'Kode OTP tidak valid' });
+      }
+
+      const isExpired = new Date() > new Date(user.reset_otp_expires);
+      if (isExpired) {
+        return res.status(400).json({ success: false, message: 'Kode OTP sudah kedaluwarsa' });
+      }
+
+      await User.updatePassword(user.id_user, newPassword);
+      await User.clearResetOtp(user.id_user);
+
+      // Log Audit
+      await logAudit({
+        id_user: user.id_user,
+        aksi: 'RESET_PASSWORD',
+        deskripsi: `User mereset kata sandi melalui WhatsApp OTP`,
+        tabel_target: 'users',
+        id_target: user.id_user,
+        ip_address: req.ip
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Kata sandi berhasil diperbarui'
+      });
+    } catch (error) {
+      console.error('Reset password error:', error);
+      res.status(500).json({ success: false, message: 'Terjadi kesalahan saat mengatur ulang kata sandi' });
     }
   }
 }

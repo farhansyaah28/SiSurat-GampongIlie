@@ -119,6 +119,22 @@ class User {
   static async verifyPassword(inputPassword, hashedPassword) {
     return await bcrypt.compare(inputPassword, hashedPassword);
   }
+
+  static async setResetOtp(id, otp, expiresAt) {
+    const [result] = await pool.execute(
+      'UPDATE users SET reset_otp = ?, reset_otp_expires = ? WHERE id_user = ?',
+      [otp, expiresAt, id]
+    );
+    return result;
+  }
+
+  static async clearResetOtp(id) {
+    const [result] = await pool.execute(
+      'UPDATE users SET reset_otp = NULL, reset_otp_expires = NULL WHERE id_user = ?',
+      [id]
+    );
+    return result;
+  }
 }
 
 module.exports = User;

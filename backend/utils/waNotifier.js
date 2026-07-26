@@ -69,4 +69,46 @@ async function sendStatusNotification(pengajuan, newStatus, keterangan = '') {
   }
 }
 
-module.exports = { sendStatusNotification };
+/**
+ * Mengirim OTP reset password via WhatsApp ke warga
+ * @param {string} phone - Nomor HP / WA warga
+ * @param {string} nama - Nama lengkap warga
+ * @param {string} otp - Kode OTP 6 digit
+ */
+async function sendResetOtpNotification(phone, nama, otp) {
+  try {
+    const targetPhone = phone || '081234567890';
+    const message = `*SISURAT GAMPONG ILIE - RESET KATA SANDI*\n\n` +
+      `Halo *${nama}*,\n` +
+      `Kami menerima permintaan untuk menyetel ulang kata sandi akun Anda.\n\n` +
+      `🔑 *KODE OTP RESET:* *${otp}*\n\n` +
+      `Masukkan kode OTP di atas pada halaman web untuk melanjutkan proses reset.\n` +
+      `Kode ini berlaku selama *10 menit*. Jika Anda tidak meminta reset kata sandi, abaikan saja pesan ini.\n\n` +
+      `_Pesan ini dikirim secara otomatis oleh sistem SiSurat Gampong._`;
+
+    // Always log to console
+    console.log('\n======================================================');
+    console.log(`🔑 [WHATSAPP OTP GATEWAY]`);
+    console.log(`Tujuan (WA Warga) : ${targetPhone}`);
+    console.log(`OTP               : ${otp}`);
+    console.log(`Isi Pesan         :\n${message}`);
+    console.log('======================================================\n');
+
+    if (process.env.FONNTE_TOKEN) {
+      await axios.post('https://api.fonnte.com/send', {
+        target: targetPhone,
+        message: message,
+        countryCode: '62'
+      }, {
+        headers: {
+          'Authorization': process.env.FONNTE_TOKEN
+        }
+      });
+      console.log(`✅ [WA Notifier] OTP Reset Password berhasil dikirim via Fonnte ke ${targetPhone}`);
+    }
+  } catch (err) {
+    console.error('❌ [WA Notifier Error]: Gagal mengirim OTP WhatsApp:', err.message || err);
+  }
+}
+
+module.exports = { sendStatusNotification, sendResetOtpNotification };

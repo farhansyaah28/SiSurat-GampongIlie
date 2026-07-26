@@ -152,7 +152,7 @@
         <div class="space-y-1.5">
           <div class="flex justify-between items-center px-0.5">
             <label class="text-[11px] font-bold text-gray-500" for="password">Kata Sandi</label>
-            <a class="text-[11px] font-bold text-primary hover:underline transition-all" href="#">Lupa sandi?</a>
+            <a class="text-[11px] font-bold text-primary hover:underline transition-all" href="#" onclick="openForgotPasswordModal(event)">Lupa sandi?</a>
           </div>
           <div class="relative">
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"><i class="fa-solid fa-lock"></i></span>
@@ -222,6 +222,137 @@
         }, 100);
       }
     });
+
+    function openForgotPasswordModal(e) {
+      if (e) e.preventDefault();
+      document.getElementById('forgotPasswordModal').classList.remove('hidden');
+      document.getElementById('forgotPasswordModal').classList.add('flex');
+      document.getElementById('forgotStep1').classList.remove('hidden');
+      document.getElementById('forgotStep2').classList.add('hidden');
+      document.getElementById('forgotNik').value = '';
+    }
+    
+    function closeForgotPasswordModal() {
+      document.getElementById('forgotPasswordModal').classList.remove('flex');
+      document.getElementById('forgotPasswordModal').classList.add('hidden');
+    }
+    
+    async function requestOtp() {
+      const nik = document.getElementById('forgotNik').value.trim();
+      if (!nik || nik.length !== 16) {
+        return showToast('NIK harus berupa 16 digit angka!');
+      }
+      
+      showLoader();
+      try {
+        const response = await fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nik })
+        });
+        const r = await response.json();
+        hideLoader();
+        if (r.success) {
+          showToast(r.message);
+          document.getElementById('forgotStep1').classList.add('hidden');
+          document.getElementById('forgotStep2').classList.remove('hidden');
+          document.getElementById('forgotOtp').value = '';
+          document.getElementById('forgotNewPassword').value = '';
+          document.getElementById('forgotConfirmPassword').value = '';
+        } else {
+          showToast(r.message || 'Gagal meminta OTP');
+        }
+      } catch (err) {
+        hideLoader();
+        showToast('Koneksi ke server terputus');
+      }
+    }
+    
+    async function submitResetPassword() {
+      const nik = document.getElementById('forgotNik').value.trim();
+      const otp = document.getElementById('forgotOtp').value.trim();
+      const newPassword = document.getElementById('forgotNewPassword').value;
+      const confirmPassword = document.getElementById('forgotConfirmPassword').value;
+      
+      if (!otp || otp.length !== 6) {
+        return showToast('OTP harus 6 digit angka!');
+      }
+      if (!newPassword || newPassword.length < 6) {
+        return showToast('Kata sandi baru minimal 6 karakter!');
+      }
+      if (newPassword !== confirmPassword) {
+        return showToast('Konfirmasi kata sandi tidak cocok!');
+      }
+      
+      showLoader();
+      try {
+        const response = await fetch('/api/auth/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nik, otp, newPassword })
+        });
+        const r = await response.json();
+        hideLoader();
+        if (r.success) {
+          showToast(r.message);
+          closeForgotPasswordModal();
+        } else {
+          showToast(r.message || 'Gagal mengatur ulang kata sandi');
+        }
+      } catch (err) {
+        hideLoader();
+        showToast('Koneksi ke server terputus');
+      }
+    }
   </script>
+
+  <!-- Modal Lupa Sandi -->
+  <div id="forgotPasswordModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/45 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl relative border border-gray-100 text-left animate-slide-up" style="max-height: 85vh; overflow-y: auto;">
+      <div class="flex justify-between items-center mb-4 border-b pb-3">
+        <h3 class="text-base font-extrabold text-primary flex items-center gap-2">
+          <i class="fa-solid fa-key"></i> Lupa Kata Sandi Warga
+        </h3>
+        <button type="button" onclick="closeForgotPasswordModal()" class="text-gray-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      
+      <!-- STEP 1: Minta OTP -->
+      <div id="forgotStep1" class="space-y-4">
+        <p class="text-xs text-gray-500 leading-relaxed">Masukkan NIK Anda di bawah. Sistem akan memverifikasi data dan otomatis mengirimkan **Kode OTP** unik ke nomor WhatsApp Anda yang terdaftar.</p>
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold text-gray-500">Nomor Induk Kependudukan (NIK)</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"><i class="fa-regular fa-address-card"></i></span>
+            <input type="text" id="forgotNik" class="w-full pl-10 pr-4 py-2.5 custom-input rounded-xl text-sm focus:outline-none outline-none font-medium text-gray-800" placeholder="16 Digit NIK Anda" required />
+          </div>
+        </div>
+        <button type="button" onclick="requestOtp()" class="w-full py-2.5 bg-primary hover:bg-dark text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-1.5">
+          <span>Kirim OTP via WhatsApp</span>
+          <i class="fa-brands fa-whatsapp text-sm"></i>
+        </button>
+      </div>
+
+      <!-- STEP 2: Verifikasi & Reset -->
+      <div id="forgotStep2" class="space-y-4 hidden">
+        <p class="text-xs text-gray-500 leading-relaxed">Kode OTP 6-digit sudah dikirim ke WhatsApp Anda. Masukkan kode tersebut bersama dengan kata sandi baru Anda.</p>
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold text-gray-500">Kode OTP WhatsApp</label>
+          <input type="text" id="forgotOtp" class="w-full px-4 py-2.5 custom-input rounded-xl text-sm font-mono tracking-widest text-center text-gray-800" placeholder="••••••" maxlength="6" required />
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold text-gray-500">Kata Sandi Baru</label>
+          <input type="password" id="forgotNewPassword" class="w-full px-4 py-2.5 custom-input rounded-xl text-sm text-gray-800" placeholder="Minimal 6 karakter" required />
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold text-gray-500">Konfirmasi Kata Sandi Baru</label>
+          <input type="password" id="forgotConfirmPassword" class="w-full px-4 py-2.5 custom-input rounded-xl text-sm text-gray-800" placeholder="Ulangi kata sandi baru" required />
+        </div>
+        <button type="button" onclick="submitResetPassword()" class="w-full py-2.5 bg-gradient-to-r from-primary to-dark text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-1.5">
+          <span>Simpan Kata Sandi Baru</span>
+          <i class="fa-solid fa-circle-check"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
