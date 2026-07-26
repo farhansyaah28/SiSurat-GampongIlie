@@ -31,7 +31,7 @@ app.use(helmet({
 app.use(limiter);
 
 // Static uploads
-const uploadsDir = path.join(__dirname, 'uploads');
+const uploadsDir = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, 'uploads');
 app.use('/uploads', express.static(uploadsDir));
 
 // Routes
