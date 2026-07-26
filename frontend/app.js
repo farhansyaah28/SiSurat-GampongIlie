@@ -1588,7 +1588,7 @@ function showProfileModal(userData) {
     modal.id = 'profileModal';
     modal.className = 'fixed inset-0 z-[100] hidden items-center justify-center bg-black/40 backdrop-blur-sm';
     modal.innerHTML = `
-      <div class="bg-white rounded-2xl w-full max-w-md p-6 m-4 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto border border-gray-100 relative z-[110] text-left">
+      <div class="bg-white rounded-2xl w-full max-w-md p-6 m-4 shadow-2xl animate-fade-in border border-gray-100 relative z-[110] text-left" style="max-height: 80vh; overflow-y: auto;">
         <div class="flex justify-between items-center mb-4 border-b pb-3">
           <h3 class="text-lg font-bold text-primary flex items-center gap-2">
             <i class="fa-solid fa-user-gear"></i> Lengkapi Profil Saya
