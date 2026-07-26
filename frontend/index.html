@@ -171,9 +171,11 @@
 <body class="bg-background text-on-surface font-sans overflow-x-hidden selection:bg-primary selection:text-white relative hero-pattern">
 
   <!-- Light Green Glow Background Objects -->
-  <div class="glow-blob w-[500px] h-[500px] bg-secondary/8 top-20 left-10 animate-pulse-slow"></div>
-  <div class="glow-blob w-[450px] h-[450px] bg-primary-container/8 top-[700px] right-5 animate-pulse-slow" style="animation-delay: 2s;"></div>
-  <div class="glow-blob w-[600px] h-[600px] bg-secondary-container/10 top-[1500px] left-1/4 animate-pulse-slow" style="animation-delay: 4s;"></div>
+  <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="glow-blob w-[500px] h-[500px] bg-secondary/8 top-20 left-10 animate-pulse-slow"></div>
+    <div class="glow-blob w-[450px] h-[450px] bg-primary-container/8 top-[700px] right-5 animate-pulse-slow" style="animation-delay: 2s;"></div>
+    <div class="glow-blob w-[600px] h-[600px] bg-secondary-container/10 top-[1500px] left-1/4 animate-pulse-slow" style="animation-delay: 4s;"></div>
+  </div>
 
   <!-- Global Loader & Toast -->
   <div id="globalLoader" class="fixed inset-0 z-[100] hidden items-center justify-center bg-white/60 backdrop-blur-md">
