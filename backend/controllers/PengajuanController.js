@@ -1139,11 +1139,27 @@ class PengajuanController {
         }
       }
 
-      if (!fileSurat) return res.status(404).json({ success: false, message: 'File tidak tersedia' });
-
       const path = require('path');
+      const fs = require('fs');
       const uploadsBaseDir = process.env.VERCEL ? '/tmp' : path.join(__dirname, '..');
-      const filePath = path.join(uploadsBaseDir, fileSurat.replace(/^[\/]/, ''));
+      
+      let filePath = fileSurat ? path.join(uploadsBaseDir, fileSurat.replace(/^[\/]/, '')) : null;
+
+      // Jika file_surat tidak ada, ATAU file fisiknya tidak ditemukan di disk, buat ulang (Self-Healing)
+      if ((!filePath || !fs.existsSync(filePath)) && pengajuan.status === 'disetujui') {
+        try {
+          console.log(`[Self-Healing] PDF file not found at ${filePath}. Regenerating...`);
+          fileSurat = await PengajuanController.generatePDFHelper(id, req.user || { id_user: pengajuan.id_user }, req.ip);
+          filePath = path.join(uploadsBaseDir, fileSurat.replace(/^[\/]/, ''));
+        } catch (err) {
+          console.error('Failed to regenerate missing PDF file during download:', err);
+        }
+      }
+
+      if (!filePath || !fs.existsSync(filePath)) {
+        return res.status(404).json({ success: false, message: 'File tidak tersedia' });
+      }
+
       return res.download(filePath);
     } catch (error) {
       console.error('Download file error:', error);
