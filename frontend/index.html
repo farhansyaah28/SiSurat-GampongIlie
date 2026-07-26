@@ -756,7 +756,11 @@
       const text = document.getElementById('statusText');
       
       try {
-        const response = await fetch('http://localhost:3000/api/jenis-surat');
+        const apiBase = (window.location.port === '5500' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'))
+          ? `http://${window.location.hostname}:3000/api`
+          : `${window.location.origin}/api`;
+
+        const response = await fetch(`${apiBase}/jenis-surat`);
         const r = await response.json();
         
         if (r.success && r.data && r.data.length > 0) {
