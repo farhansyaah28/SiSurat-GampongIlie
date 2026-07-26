@@ -1128,9 +1128,20 @@ class PengajuanController {
       const pengajuan = await PengajuanSurat.findById(id);
       if (!pengajuan) return res.status(404).json({ success: false, message: 'Pengajuan tidak ditemukan' });
 
-      if (!pengajuan.file_surat) return res.status(404).json({ success: false, message: 'File tidak tersedia' });
+      let fileSurat = pengajuan.file_surat;
 
-      const filePath = require('path').join(__dirname, '..', pengajuan.file_surat.replace(/^[\/]/, ''));
+      // Jika file_surat kosong tetapi statusnya disetujui, buat secara otomatis (Self-Healing)
+      if (!fileSurat && pengajuan.status === 'disetujui') {
+        try {
+          fileSurat = await PengajuanController.generatePDFHelper(id, req.user || { id_user: pengajuan.id_user }, req.ip);
+        } catch (err) {
+          console.error('Failed to auto-generate PDF during download:', err);
+        }
+      }
+
+      if (!fileSurat) return res.status(404).json({ success: false, message: 'File tidak tersedia' });
+
+      const filePath = require('path').join(__dirname, '..', fileSurat.replace(/^[\/]/, ''));
       return res.download(filePath);
     } catch (error) {
       console.error('Download file error:', error);

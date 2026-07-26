@@ -967,7 +967,7 @@ async function loadMyPengajuan(silent = false){
      if (filter === 'pending') {
         filteredData = r.data.filter(x => x.status === 'menunggu_verifikasi' || x.status === 'terverifikasi' || x.status === 'menunggu_persetujuan');
      } else if (filter === 'selesai') {
-        filteredData = r.data.filter(x => x.status === 'disetujui' || x.status === 'selesai' || (x.file_surat && (x.status === 'disetujui' || x.status === 'selesai' || x.status === 'terverifikasi')));
+        filteredData = r.data.filter(x => x.status === 'disetujui' || x.status === 'selesai');
      }
      
      if (filteredData.length === 0) {
@@ -977,7 +977,7 @@ async function loadMyPengajuan(silent = false){
 
      filteredData.forEach(p=>{
         let btn = '';
-        if (p.file_surat && (p.status === 'disetujui' || p.status === 'selesai' || p.status === 'terverifikasi')) {
+        if (p.status === 'disetujui' || p.status === 'selesai' || p.file_surat) {
           btn = `<button class="btn-primary !px-3 !py-1 text-xs" onclick="downloadPdf(${p.id_pengajuan})"><i class="fa-solid fa-download mr-1"></i> PDF</button>`;
         } else if (p.status === 'ditolak') {
           const cleanNote = (p.catatan_ditolak || 'Tidak ada catatan').replace(/'/g, "\\'").replace(/"/g, '&quot;');
