@@ -298,15 +298,15 @@ class AuthController {
 
       await User.setResetOtp(user.id_user, otp, expiresAt);
       
-      // Kirim via Email
-      await sendResetOtpEmail(user.email, user.nama, otp);
+      // Kirim via WhatsApp
+      await sendResetOtpNotification(user.no_hp, user.nama, otp);
 
-      // Mask email untuk privasi (contoh: te***@gmail.com)
-      const maskedEmail = user.email.replace(/^(..)(.*)(@.*)$/, (m, a, b, c) => a + '*'.repeat(b.length) + c);
+      // Mask nomor telepon untuk privasi (contoh: 0812****890)
+      const maskedPhone = user.no_hp.replace(/(\d{4})(\d+)(\d{3})/, (m, a, b, c) => a + '*'.repeat(b.length) + c);
 
       res.status(200).json({
         success: true,
-        message: `Kode OTP berhasil dikirim ke email Anda (${maskedEmail})`
+        message: `Kode OTP berhasil dikirim ke nomor WhatsApp Anda (${maskedPhone})`
       });
     } catch (error) {
       console.error('Forgot password error:', error);
