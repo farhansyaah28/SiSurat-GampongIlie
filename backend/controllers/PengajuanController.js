@@ -1141,7 +1141,9 @@ class PengajuanController {
 
       if (!fileSurat) return res.status(404).json({ success: false, message: 'File tidak tersedia' });
 
-      const filePath = require('path').join(__dirname, '..', fileSurat.replace(/^[\/]/, ''));
+      const path = require('path');
+      const uploadsBaseDir = process.env.VERCEL ? '/tmp' : path.join(__dirname, '..');
+      const filePath = path.join(uploadsBaseDir, fileSurat.replace(/^[\/]/, ''));
       return res.download(filePath);
     } catch (error) {
       console.error('Download file error:', error);
