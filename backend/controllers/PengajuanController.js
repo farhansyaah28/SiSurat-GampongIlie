@@ -167,7 +167,7 @@ class PengajuanController {
       let targetUserId = id_user;
 
       if (is_new_user) {
-        const { nama, nik, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = new_user_data || {};
+        const { nama, nik, email: inputEmail, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = new_user_data || {};
         if (!nama || !nik) {
           return res.status(400).json({ success: false, message: 'Nama dan NIK warga baru harus diisi' });
         }
@@ -179,7 +179,7 @@ class PengajuanController {
         }
 
         // Create new user
-        const email = `${nik}@example.local`;
+        const email = inputEmail && inputEmail.trim() !== '' ? inputEmail.trim() : `${nik}@example.local`;
         const namaDepan = nama.trim().split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
         const tigaDigitNIK = nik.substring(Math.max(0, nik.length - 3));
         const defaultPassword = `${namaDepan}${tigaDigitNIK}`;
@@ -188,6 +188,7 @@ class PengajuanController {
           nama,
           nik,
           email,
+          no_hp: no_hp || null,
           password: defaultPassword,
           role: 'warga',
           tempat_lahir,

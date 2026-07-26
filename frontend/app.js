@@ -1852,6 +1852,8 @@ if (document.getElementById('onBehalfForm')) {
       body.new_user_data = {
         nama: formObj.nama,
         nik: formObj.nik,
+        no_hp: formObj.no_hp || null,
+        email: formObj.email || null,
         tempat_lahir: formObj.tempat_lahir || null,
         tanggal_lahir: formObj.tanggal_lahir || null,
         jenis_kelamin: formObj.jenis_kelamin || null,
