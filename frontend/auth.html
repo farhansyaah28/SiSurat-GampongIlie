@@ -318,7 +318,7 @@
       
       <!-- STEP 1: Minta OTP -->
       <div id="forgotStep1" class="space-y-4">
-        <p class="text-xs text-gray-500 leading-relaxed">Masukkan NIK Anda di bawah. Sistem akan memverifikasi data dan otomatis mengirimkan **Kode OTP** unik ke nomor WhatsApp Anda yang terdaftar.</p>
+        <p class="text-xs text-gray-500 leading-relaxed">Masukkan NIK Anda di bawah. Sistem akan memverifikasi data dan otomatis mengirimkan **Kode OTP** unik ke alamat email Anda yang terdaftar.</p>
         <div class="space-y-1.5">
           <label class="text-[11px] font-bold text-gray-500">Nomor Induk Kependudukan (NIK)</label>
           <div class="relative">
@@ -327,16 +327,16 @@
           </div>
         </div>
         <button type="button" onclick="requestOtp()" class="w-full py-2.5 bg-primary hover:bg-dark text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-1.5">
-          <span>Kirim OTP via WhatsApp</span>
-          <i class="fa-brands fa-whatsapp text-sm"></i>
+          <span>Kirim OTP via Email</span>
+          <i class="fa-regular fa-envelope text-sm"></i>
         </button>
       </div>
 
       <!-- STEP 2: Verifikasi & Reset -->
       <div id="forgotStep2" class="space-y-4 hidden">
-        <p class="text-xs text-gray-500 leading-relaxed">Kode OTP 6-digit sudah dikirim ke WhatsApp Anda. Masukkan kode tersebut bersama dengan kata sandi baru Anda.</p>
+        <p class="text-xs text-gray-500 leading-relaxed">Kode OTP 6-digit sudah dikirim ke email Anda. Masukkan kode tersebut bersama dengan kata sandi baru Anda.</p>
         <div class="space-y-1.5">
-          <label class="text-[11px] font-bold text-gray-500">Kode OTP WhatsApp</label>
+          <label class="text-[11px] font-bold text-gray-500">Kode OTP Email</label>
           <input type="text" id="forgotOtp" class="w-full px-4 py-2.5 custom-input rounded-xl text-sm font-mono tracking-widest text-center text-gray-800" placeholder="••••••" maxlength="6" required />
         </div>
         <div class="space-y-1.5">

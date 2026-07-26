@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { logAudit } = require('../utils/auditLogger');
 const { sendResetOtpNotification } = require('../utils/waNotifier');
+const { sendResetOtpEmail } = require('../utils/emailNotifier');
 
 class AuthController {
   static async register(req, res) {
@@ -296,11 +297,16 @@ class AuthController {
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
       await User.setResetOtp(user.id_user, otp, expiresAt);
-      await sendResetOtpNotification(user.no_hp, user.nama, otp);
+      
+      // Kirim via Email
+      await sendResetOtpEmail(user.email, user.nama, otp);
+
+      // Mask email untuk privasi (contoh: te***@gmail.com)
+      const maskedEmail = user.email.replace(/^(..)(.*)(@.*)$/, (m, a, b, c) => a + '*'.repeat(b.length) + c);
 
       res.status(200).json({
         success: true,
-        message: 'Kode OTP berhasil dikirim ke nomor WhatsApp Anda'
+        message: `Kode OTP berhasil dikirim ke email Anda (${maskedEmail})`
       });
     } catch (error) {
       console.error('Forgot password error:', error);
