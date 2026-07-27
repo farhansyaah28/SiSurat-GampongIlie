@@ -1294,14 +1294,34 @@ async function loadJenisAdminList(){
   if (j.success){
     window.allJenisSurat = j.data;
     j.data.forEach(item=>{
+      let fields = [];
+      try {
+        if (item.custom_fields) {
+          fields = typeof item.custom_fields === 'string' ? JSON.parse(item.custom_fields) : item.custom_fields;
+        }
+      } catch(e){}
+      const fieldCount = Array.isArray(fields) ? fields.length : 0;
+      const cleanBody = item.body_template ? (item.body_template.length > 50 ? item.body_template.substring(0, 50) + '...' : item.body_template) : 'Template kalimat default';
+
       tbody.insertAdjacentHTML('beforeend', `
-        <tr>
-          <td class="px-4 py-3 font-bold text-sm text-gray-800">
-            ${item.nama_jenis}
-            ${item.syarat_dokumen ? `<div class="mt-1"><span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded text-[10px] font-semibold"><i class="fa-solid fa-paperclip"></i> Syarat: ${item.syarat_dokumen}</span></div>` : ''}
+        <tr class="hover:bg-gray-50/30 transition-colors border-b border-gray-100">
+          <td class="px-6 py-4">
+            <div class="font-bold text-sm text-gray-800">${item.nama_jenis}</div>
+            ${item.syarat_dokumen ? `<div class="mt-1"><span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg text-[9px] font-semibold"><i class="fa-solid fa-paperclip"></i> Syarat: ${item.syarat_dokumen}</span></div>` : ''}
           </td>
-          <td class="px-4 py-3 text-xs text-gray-500">${item.deskripsi||'-'}</td>
-          <td class="px-4 py-3 text-right">
+          <td class="px-6 py-4 text-xs text-gray-500 max-w-[150px] truncate" title="${item.deskripsi||'-'}">${item.deskripsi||'-'}</td>
+          <td class="px-6 py-4 text-xs text-gray-500 italic max-w-[200px] truncate" title="${item.body_template||'-'}">${cleanBody}</td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-xl text-[10px] font-bold">
+              <i class="fa-solid fa-square-poll-horizontal"></i> ${fieldCount} Field Dinamis
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border ${item.status === 'aktif' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}">
+              ${item.status === 'aktif' ? 'Aktif' : 'Nonaktif'}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-right">
              <div class="flex items-center justify-end gap-2">
                <button class="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors flex items-center justify-center w-8 h-8" title="Edit Template" onclick="editJenis(${item.id_jenis})">
                  <i class="fa-solid fa-pen text-[10px]"></i>
@@ -1315,7 +1335,7 @@ async function loadJenisAdminList(){
       `);
     });
   } else {
-    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-xs py-4 text-gray-400">Tidak ada template surat.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-xs py-10 text-gray-400">Tidak ada template surat.</td></tr>';
   }
 }
 
@@ -1375,6 +1395,8 @@ window.editJenis = function(id) {
          fields.forEach(f => window.addFieldRow(f.label, f.type));
       }
    }
+   
+   if (el('#jenisModal')) el('#jenisModal').classList.remove('hidden');
 }
 
 if(el('#btnCancelJenis')) {
@@ -1385,8 +1407,27 @@ if(el('#btnCancelJenis')) {
     if (el('#customFieldsWrapper')) el('#customFieldsWrapper').innerHTML = '';
     el('#templateFileNameDisplay').textContent = "Unggah template (.docx atau Gambar)";
     el('#btnCancelJenis').classList.add('hidden');
+    if (el('#jenisModal')) el('#jenisModal').classList.add('hidden');
   });
 }
+
+window.openAddJenisModal = function() {
+  editJenisId = null;
+  el('#jenisFormTitle').textContent = 'Buat Template Baru';
+  el('#jenisForm').reset();
+  if (el('#customFieldsWrapper')) el('#customFieldsWrapper').innerHTML = '';
+  el('#templateFileNameDisplay').textContent = "Unggah template (.docx atau Gambar)";
+  el('#btnCancelJenis').classList.add('hidden');
+  if (el('#jenisModal')) el('#jenisModal').classList.remove('hidden');
+};
+
+window.closeJenisModal = function() {
+  if (el('#btnCancelJenis')) {
+    el('#btnCancelJenis').click();
+  } else if (el('#jenisModal')) {
+    el('#jenisModal').classList.add('hidden');
+  }
+};
 
 if(el('#jenisForm')) {
   el('#jenisForm').addEventListener('submit', async e=>{
