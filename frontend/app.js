@@ -975,17 +975,17 @@ async function loadMyPengajuan(silent = false){
      filteredData.forEach(p=>{
         let btn = '';
         if (p.status === 'disetujui' || p.status === 'selesai' || p.file_surat) {
-          btn = `<button class="btn-primary !px-3 !py-1 text-xs" onclick="downloadPdf(${p.id_pengajuan})"><i class="fa-solid fa-download mr-1"></i> PDF</button>`;
+          btn = `<button class="btn-primary !inline-flex items-center justify-center !px-3 !py-1 text-xs" onclick="downloadPdf(${p.id_pengajuan})"><i class="fa-solid fa-download mr-1"></i> PDF</button>`;
         } else if (p.status === 'ditolak') {
           const cleanNote = (p.catatan_ditolak || 'Tidak ada catatan').replace(/'/g, "\\'").replace(/"/g, '&quot;');
           btn = `
-             <div class="flex items-center gap-2 justify-end">
+             <div class="flex items-center gap-2 justify-center">
                <button class="btn-outline border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white !px-3 !py-1 text-xs" onclick="customAlert('Catatan Penolakan', '${cleanNote}', 'fa-message', 'text-amber-600', 'bg-amber-50')"><i class="fa-solid fa-message mr-1"></i> Catatan</button>
                <button class="btn-primary bg-red-500 hover:bg-red-600 text-white !px-3 !py-1 text-xs border-0" onclick="window.location.href='pengajuan.html?revise=${p.id_pengajuan}'"><i class="fa-solid fa-pen-to-square mr-1"></i> Revisi</button>
              </div>
            `;
         } else {
-          btn = `<button class="btn-outline !px-3 !py-1 text-xs" onclick="customAlert('Status Proses', 'Proses pengajuan surat ini sedang berjalan. Mohon tunggu verifikasi dan persetujuan dari perangkat desa.', 'fa-hourglass-half', 'text-blue-600', 'bg-blue-50')"><i class="fa-solid fa-hourglass-half"></i> Proses</button>`;
+          btn = `<button class="btn-outline !inline-flex items-center justify-center !px-3 !py-1 text-xs" onclick="customAlert('Status Proses', 'Proses pengajuan surat ini sedang berjalan. Mohon tunggu verifikasi dan persetujuan dari perangkat desa.', 'fa-hourglass-half', 'text-blue-600', 'bg-blue-50')"><i class="fa-solid fa-hourglass-half"></i> Proses</button>`;
         }
         
         tbody.insertAdjacentHTML('beforeend', `
@@ -993,8 +993,8 @@ async function loadMyPengajuan(silent = false){
             <td class="px-6 py-4 font-medium text-gray-900">#${p.id_pengajuan}</td>
             <td class="px-6 py-4 text-sm">${p.nama_jenis}</td>
             <td class="px-6 py-4 text-sm text-gray-500">${p.keperluan}</td>
-            <td class="px-6 py-4">${getStatusBadge(p.status)}</td>
-            <td class="px-6 py-4 text-right">${btn}</td>
+            <td class="px-6 py-4 text-center">${getStatusBadge(p.status)}</td>
+            <td class="px-6 py-4 text-center">${btn}</td>
           </tr>
         `);
      });
@@ -1040,7 +1040,7 @@ async function loadAdmin(status = currentAdminFilterStatus, silent = false) {
             <td class="px-6 py-4 text-sm text-gray-600">${p.nama_jenis}</td>
             <td class="px-6 py-4 text-center">${getStatusBadge(p.status)}</td>
             <td class="px-6 py-4 text-center">
-               <button class="btn-secondary !px-3 !py-1.5 !inline-flex text-xs" onclick="openDetailPanel(${p.id_pengajuan})"><i class="fa-solid fa-list-check"></i> Proses</button>
+               <button class="btn-secondary !px-3 !py-1.5 !inline-flex items-center justify-center text-xs" onclick="openDetailPanel(${p.id_pengajuan})"><i class="fa-solid fa-list-check"></i> Proses</button>
             </td>
           </tr>
         `);
