@@ -975,7 +975,7 @@ async function loadMyPengajuan(silent = false){
      filteredData.forEach(p=>{
         let btn = '';
         if (p.status === 'disetujui' || p.status === 'selesai' || p.file_surat) {
-          btn = `<button class="btn-primary !px-3 !py-1 text-xs" onclick="downloadPdf(${p.id_pengajuan})"><i class="fa-solid fa-download mr-1"></i> PDF</button>`;
+          btn = `<button class="btn-primary !inline-flex !px-3 !py-1 text-xs" onclick="downloadPdf(${p.id_pengajuan})"><i class="fa-solid fa-download mr-1"></i> PDF</button>`;
         } else if (p.status === 'ditolak') {
           const cleanNote = (p.catatan_ditolak || 'Tidak ada catatan').replace(/'/g, "\\'").replace(/"/g, '&quot;');
           btn = `
@@ -985,7 +985,7 @@ async function loadMyPengajuan(silent = false){
              </div>
            `;
         } else {
-          btn = `<button class="btn-outline !px-3 !py-1 text-xs" onclick="customAlert('Status Proses', 'Proses pengajuan surat ini sedang berjalan. Mohon tunggu verifikasi dan persetujuan dari perangkat desa.', 'fa-hourglass-half', 'text-blue-600', 'bg-blue-50')"><i class="fa-solid fa-hourglass-half"></i> Proses</button>`;
+          btn = `<button class="btn-outline !inline-flex !px-3 !py-1 text-xs" onclick="customAlert('Status Proses', 'Proses pengajuan surat ini sedang berjalan. Mohon tunggu verifikasi dan persetujuan dari perangkat desa.', 'fa-hourglass-half', 'text-blue-600', 'bg-blue-50')"><i class="fa-solid fa-hourglass-half"></i> Proses</button>`;
         }
         
         tbody.insertAdjacentHTML('beforeend', `
