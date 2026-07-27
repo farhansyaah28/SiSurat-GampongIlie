@@ -851,13 +851,6 @@ class PengajuanController {
         drawField('Pekerjaan', pengajuan.pekerjaan);
         drawField('Alamat', pengajuan.alamat || 'Gampong Ilie Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh');
 
-      } else if (namaJenis.includes('kematian')) {
-        drawField('NIK Almarhum/ah', fields.nik_jenazah || '-');
-        drawField('Nama Almarhum/ah', fields.nama_jenazah || '-');
-        drawField('Tempat/Tgl Lahir', fields.ttl_jenazah || '-');
-        drawField('Jenis Kelamin', fields.jenis_kelamin_jenazah || '-');
-        drawField('Alamat', fields.alamat_jenazah || pengajuan.alamat || 'Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh');
-
       } else {
         drawField('NIK', pengajuan.nik);
         drawField('Nama Lengkap', pengajuan.nama_pemohon);
@@ -965,7 +958,7 @@ class PengajuanController {
         const formattedTglMeninggal = tglMeninggal.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
         const dayName = days[tglMeninggal.getDay()];
 
-        bodyText = `Benar yang namanya tersebut diatas telah meninggal dunia pada:`;
+        bodyText = `Benar berdasarkan laporan dari pihak keluarga/masyarakat, telah meninggal dunia warga Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh dengan identitas sebagai berikut:`;
         
         const cleanBody = typeof bodyText === 'string' ? bodyText.replace(/\r/g, '') : bodyText;
         doc.font('Helvetica').fontSize(11).text(cleanBody, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
@@ -984,18 +977,13 @@ class PengajuanController {
           lineY += 18;
         };
         
+        drawFieldLocal('Nama Almarhum/ah', fields.nama_jenazah || '-');
+        drawFieldLocal('NIK Almarhum/ah', fields.nik_jenazah || '-');
         drawFieldLocal('Hari / Tgl Kematian', `${dayName}, ${formattedTglMeninggal}`);
         drawFieldLocal('Pukul / Waktu', `${fields.jam_meninggal || '-'} WIB`);
         drawFieldLocal('Tempat Meninggal', fields.tempat_meninggal || '-');
         drawFieldLocal('Penyebab Kematian', fields.penyebab_meninggal || '-');
-        
-        lineY += 10;
-        doc.font('Helvetica').text('Surat keterangan ini dibuat berdasarkan laporan dari:', 50, lineY, { align: 'justify', width: doc.page.width - 100 });
-        lineY = doc.y + 12;
-
-        drawFieldLocal('Nama Pelapor', pengajuan.nama_pemohon);
-        drawFieldLocal('NIK Pelapor', pengajuan.nik);
-        drawFieldLocal('Hubungan', fields.hubungan_pelapor || 'Keluarga');
+        drawFieldLocal('Nama Pelapor / Hubungan', `${pengajuan.nama_pemohon} (${fields.hubungan_pelapor || 'Keluarga'})`);
         
         subSectionY = lineY + 12;
       }
