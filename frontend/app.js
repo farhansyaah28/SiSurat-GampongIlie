@@ -1590,11 +1590,14 @@ function setupResponsiveSidebar() {
         toggleBtn.className = 'md:hidden w-10 h-10 rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-primary flex items-center justify-center shadow-sm mr-3 flex-shrink-0';
         toggleBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
         
-        // Insert hamburger button right before the page title in the header
         const pageTitle = header.querySelector('#pageTitle');
         if (pageTitle) {
-          pageTitle.parentNode.insertBefore(toggleBtn, pageTitle);
-          pageTitle.parentNode.classList.add('flex', 'items-center');
+          const parent = pageTitle.parentNode;
+          const wrapper = document.createElement('div');
+          wrapper.className = 'flex items-center gap-2 md:gap-3 overflow-hidden';
+          parent.insertBefore(wrapper, pageTitle);
+          wrapper.appendChild(toggleBtn);
+          wrapper.appendChild(pageTitle);
           pageTitle.classList.add('text-lg', 'md:text-2xl', 'truncate');
         } else {
           header.insertBefore(toggleBtn, header.firstChild);
