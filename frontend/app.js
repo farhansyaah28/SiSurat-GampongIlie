@@ -584,7 +584,7 @@ async function refreshProfile(){
           link.innerHTML = '<i class="fa-solid fa-user-pen text-[10px]"></i> Edit Profil Saya';
           link.addEventListener('click', (e) => {
             e.preventDefault();
-            showProfileModal(r.data);
+            showProfileModal(window.currentUser);
           });
           userRoleEl.parentNode.appendChild(link);
         }
