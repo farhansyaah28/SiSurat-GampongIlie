@@ -726,7 +726,12 @@ class PengajuanController {
         titleText = 'SURAT REFERENSI DESA';
         nomorPrefix = '510';
       } else if (pengajuan.nama_jenis) {
-        titleText = `SURAT KETERANGAN ${pengajuan.nama_jenis.toUpperCase()}`;
+        const uppercaseName = pengajuan.nama_jenis.toUpperCase().trim();
+        if (uppercaseName.startsWith('SURAT')) {
+          titleText = uppercaseName;
+        } else {
+          titleText = `SURAT KETERANGAN ${uppercaseName}`;
+        }
         nomorPrefix = '470';
       }
 
@@ -740,7 +745,8 @@ class PengajuanController {
       if (namaJenis.includes('izin') && namaJenis.includes('usaha')) {
         openingText = 'Keuchik Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh, dengan ini memberikan izin usaha kepada :';
       }
-      doc.text(openingText, 50, doc.y + 15, { align: 'justify', width: doc.page.width - 100 });
+      const cleanOpening = typeof openingText === 'string' ? openingText.replace(/\r/g, '') : openingText;
+      doc.text(cleanOpening, 50, doc.y + 15, { align: 'justify', width: doc.page.width - 100 });
 
       // --- 4. GRID DATA WARGA ---
       const labelX = 85;
@@ -751,7 +757,8 @@ class PengajuanController {
       const drawField = (lbl, val) => {
         doc.font('Helvetica').text(lbl, labelX, lineY, { width: 120 });
         doc.text(':', colonX, lineY);
-        doc.text(val || '-', valueX, lineY, { width: doc.page.width - valueX - 60 });
+        const cleanVal = typeof val === 'string' ? val.replace(/\r/g, '') : val;
+        doc.text(cleanVal || '-', valueX, lineY, { width: doc.page.width - valueX - 60 });
         lineY = doc.y + 5;
       };
 
@@ -945,18 +952,22 @@ class PengajuanController {
 
         bodyText = `Benar berdasarkan laporan dari pihak keluarga/masyarakat, telah meninggal dunia warga Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh dengan identitas sebagai berikut:`;
         
-        doc.font('Helvetica').fontSize(11).text(bodyText, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
+        const cleanBody = typeof bodyText === 'string' ? bodyText.replace(/\r/g, '') : bodyText;
+        doc.font('Helvetica').fontSize(11).text(cleanBody, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
         subSectionY = doc.y + 12;
         bodyText = ''; // clear it so we don't print it again below
+
+        // Set shared lineY before drawing helper
+        lineY = subSectionY;
 
         // Helper to draw fields inside death certificate details list
         const drawFieldLocal = (label, val) => {
           doc.font('Helvetica-Bold').text(label, 70, lineY, { width: 140 });
-          doc.font('Helvetica').text(`:  ${val}`, 210, lineY, { width: 330 });
+          const cleanVal = typeof val === 'string' ? val.replace(/\r/g, '') : val;
+          doc.font('Helvetica').text(`:  ${cleanVal}`, 210, lineY, { width: 330 });
           lineY += 18;
         };
         
-        let lineY = subSectionY;
         drawFieldLocal('Nama Almarhum/ah', fields.nama_jenazah || '-');
         drawFieldLocal('NIK Almarhum/ah', fields.nik_jenazah || '-');
         drawFieldLocal('Hari / Tgl Kematian', `${dayName}, ${formattedTglMeninggal}`);
@@ -988,17 +999,21 @@ class PengajuanController {
 
         if (Array.isArray(parsedFields) && parsedFields.length > 0) {
           // Dynamic fields exist!
-          doc.font('Helvetica').fontSize(11).text(bodyText, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
+          const cleanBody = typeof bodyText === 'string' ? bodyText.replace(/\r/g, '') : bodyText;
+          doc.font('Helvetica').fontSize(11).text(cleanBody, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
           subSectionY = doc.y + 12;
           bodyText = ''; // clear it, as it has already been drawn
 
+          // Set shared lineY before drawing helper
+          lineY = subSectionY;
+
           const drawFieldLocal = (label, val) => {
             doc.font('Helvetica-Bold').text(label, 70, lineY, { width: 140 });
-            doc.font('Helvetica').text(`:  ${val}`, 210, lineY, { width: 330 });
+            const cleanVal = typeof val === 'string' ? val.replace(/\r/g, '') : val;
+            doc.font('Helvetica').text(`:  ${cleanVal}`, 210, lineY, { width: 330 });
             lineY += 18;
           };
 
-          let lineY = subSectionY;
           parsedFields.forEach(f => {
             const val = fields[f.name] || '-';
             drawFieldLocal(f.label, val);
@@ -1010,7 +1025,8 @@ class PengajuanController {
       // Write bodyText
       doc.font('Helvetica').fontSize(11);
       if (bodyText) {
-        doc.text(bodyText, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
+        const cleanBodyText = typeof bodyText === 'string' ? bodyText.replace(/\r/g, '') : bodyText;
+        doc.text(cleanBodyText, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
         subSectionY = doc.y + 12;
       }
 
@@ -1042,7 +1058,8 @@ class PengajuanController {
         keperluanText = `Surat keterangan ini dikeluarkan untuk melengkapi persyaratan keperluan: ${pengajuan.keperluan}.`;
       }
 
-      doc.text(keperluanText, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
+      const cleanKeperluanText = typeof keperluanText === 'string' ? keperluanText.replace(/\r/g, '') : keperluanText;
+      doc.text(cleanKeperluanText, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
       subSectionY = doc.y + 12;
 
       let penutupText = 'Demikianlah surat keterangan ini diperbuat dengan sebenarnya agar dapat dipergunakan seperlunya.';
@@ -1054,7 +1071,8 @@ class PengajuanController {
         penutupText = 'Demikianlah surat keterangan pengantar permohonan tanah ini dikeluarkan agar dapat dipergunakan sebagaimana mestinya.';
       }
 
-      doc.text(penutupText, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
+      const cleanPenutupText = typeof penutupText === 'string' ? penutupText.replace(/\r/g, '') : penutupText;
+      doc.text(cleanPenutupText, 50, subSectionY, { align: 'justify', width: doc.page.width - 100 });
 
       // --- 6. PENANDATANGAN & QR CODE ---
       const sigY = doc.y + 35;
