@@ -1028,7 +1028,10 @@ class PengajuanController {
           Object.keys(profileFields).forEach(key => {
             const val = profileFields[key] || '';
             const regex = new RegExp(`\\[${key}\\]|\\{${key}\\}|\\{\\{${key}\\}\\}`, 'gi');
-            bodyText = bodyText.replace(regex, val);
+            if (regex.test(bodyText)) {
+              usedKeys.push(key); // Mark as used to prevent duplicate rendering of custom field with the same key
+              bodyText = bodyText.replace(regex, val);
+            }
           });
 
           // 2. Custom fields
