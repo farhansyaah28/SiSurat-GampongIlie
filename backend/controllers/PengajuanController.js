@@ -642,7 +642,7 @@ class PengajuanController {
             doc.image(qrBuffer, sigX + 20, sigY + 32, { width: 55, height: 55 });
 
             doc.fontSize(11).font('Helvetica-Bold');
-            doc.text('Zahlul Amri', sigX, sigY + 92);
+            doc.text('ZAHLUL AMRI', sigX, sigY + 92);
             doc.fontSize(10).font('Helvetica');
             doc.text('NIP/NIK: -', sigX, sigY + 107);
             
@@ -1100,7 +1100,7 @@ class PengajuanController {
 
       // Nama Penandatangan (Kanan)
       doc.font('Helvetica-Bold').fontSize(11).fillColor('#000000');
-      doc.text('Zahlul Amri', 350, sigY + 92, { underline: true, width: 200 });
+      doc.text('ZAHLUL AMRI', 350, sigY + 92, { underline: true, width: 200 });
     }
 
     doc.end();
