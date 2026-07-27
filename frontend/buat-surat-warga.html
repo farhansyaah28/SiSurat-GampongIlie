@@ -198,7 +198,7 @@
                     </div>
                     <div>
                       <label class="block text-xs font-bold text-gray-500 mb-1">NIK (Nomor Induk Kependudukan)</label>
-                      <input type="text" name="nik" class="input-style !py-2.5 !px-3" placeholder="16 digit NIK" maxlength="16">
+                      <input type="text" name="nik" class="input-style !py-2.5 !px-3" placeholder="16 digit NIK" pattern="[0-9]{16}" minlength="16" maxlength="16" title="NIK harus berupa 16 digit angka" required>
                     </div>
                     <div>
                       <label class="block text-xs font-bold text-gray-500 mb-1">No. HP / WhatsApp</label>

@@ -2412,4 +2412,11 @@ function triggerRealtimeReloads() {
     console.log('[Realtime] Reloading citizen requests silently...');
     loadMyPengajuan(true);
   }
-}
+}
+
+// Force NIK inputs to only accept exactly 16 numeric digits
+document.addEventListener('input', (e) => {
+  if (e.target && e.target.name === 'nik') {
+    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 16);
+  }
+});
