@@ -970,9 +970,10 @@ class PengajuanController {
 
         // Helper to draw fields inside death certificate details list
         const drawFieldLocal = (label, val) => {
-          doc.font('Helvetica-Bold').text(label, 70, lineY, { width: 140 });
+          doc.font('Helvetica').text(label, labelX, lineY, { width: 120 });
+          doc.text(':', colonX, lineY);
           const cleanVal = typeof val === 'string' ? val.replace(/\r/g, '') : val;
-          doc.font('Helvetica').text(`:  ${cleanVal}`, 210, lineY, { width: 330 });
+          doc.text(cleanVal || '-', valueX, lineY, { width: doc.page.width - valueX - 60 });
           lineY += 18;
         };
         
@@ -1016,9 +1017,10 @@ class PengajuanController {
           lineY = subSectionY;
 
           const drawFieldLocal = (label, val) => {
-            doc.font('Helvetica-Bold').text(label, 70, lineY, { width: 140 });
+            doc.font('Helvetica').text(label, labelX, lineY, { width: 120 });
+            doc.text(':', colonX, lineY);
             const cleanVal = typeof val === 'string' ? val.replace(/\r/g, '') : val;
-            doc.font('Helvetica').text(`:  ${cleanVal}`, 210, lineY, { width: 330 });
+            doc.text(cleanVal || '-', valueX, lineY, { width: doc.page.width - valueX - 60 });
             lineY += 18;
           };
 
