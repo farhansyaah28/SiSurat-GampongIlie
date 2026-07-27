@@ -768,8 +768,8 @@ class PengajuanController {
         // SKTM Pendidikan
         drawField('NIK Orang Tua', pengajuan.nik);
         drawField('Nama Orang Tua (Ayah)', fields.nama_orang_tua || pengajuan.nama_pemohon);
-        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         drawField('Tempat/Tgl Lahir', fields.ttl_orang_tua);
+        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         drawField('Pekerjaan', fields.pekerjaan_orang_tua);
         drawField('Alamat', pengajuan.alamat || 'Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh');
 
@@ -789,18 +789,18 @@ class PengajuanController {
         // SKTM Bansos
         drawField('N I K', pengajuan.nik);
         drawField('Nama Lengkap', pengajuan.nama_pemohon);
-        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         const ttl = `${pengajuan.tempat_lahir || '-'}, ${pengajuan.tanggal_lahir ? new Date(pengajuan.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}`;
         drawField('Tempat/Tgl Lahir', ttl);
+        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         drawField('Pekerjaan', pengajuan.pekerjaan);
         drawField('Alamat', pengajuan.alamat || 'Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh');
 
       } else if (namaJenis.includes('domisili')) {
         drawField('N I K', pengajuan.nik);
         drawField('Nama Lengkap', pengajuan.nama_pemohon);
-        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         const ttl = `${pengajuan.tempat_lahir || '-'}, ${pengajuan.tanggal_lahir ? new Date(pengajuan.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}`;
         drawField('Tempat/Tgl Lahir', ttl);
+        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         drawField('Pekerjaan', pengajuan.pekerjaan);
         drawField('Status', pengajuan.status_perkawinan);
         drawField('Alamat', pengajuan.alamat || 'Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh');
@@ -808,9 +808,9 @@ class PengajuanController {
       } else if (isUsaha) {
         drawField('NIK', pengajuan.nik);
         drawField('Nama Lengkap', pengajuan.nama_pemohon);
-        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         const ttl = `${pengajuan.tempat_lahir || '-'}, ${pengajuan.tanggal_lahir ? new Date(pengajuan.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}`;
         drawField('Tempat/Tgl Lahir', ttl);
+        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         drawField('Pekerjaan', pengajuan.pekerjaan);
         drawField('Status', pengajuan.status_perkawinan);
         drawField('Agama', pengajuan.agama);
@@ -819,44 +819,44 @@ class PengajuanController {
       } else if (namaJenis.includes('penghasilan') || namaJenis.includes('referensi') || (namaJenis.includes('tidak') && namaJenis.includes('pajak'))) {
         drawField('N I K', pengajuan.nik);
         drawField('Nama Lengkap', pengajuan.nama_pemohon);
-        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         const ttl = `${pengajuan.tempat_lahir || '-'}, ${pengajuan.tanggal_lahir ? new Date(pengajuan.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}`;
         drawField('Tempat/Tgl Lahir', ttl);
+        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         drawField('Pekerjaan', pengajuan.pekerjaan);
         drawField('Alamat', pengajuan.alamat || 'Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh');
 
       } else if (namaJenis.includes('izin') && namaJenis.includes('usaha')) {
         drawField('N I K', pengajuan.nik);
         drawField('Nama Lengkap', pengajuan.nama_pemohon);
-        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         const ttl = `${pengajuan.tempat_lahir || '-'}, ${pengajuan.tanggal_lahir ? new Date(pengajuan.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}`;
         drawField('Tempat/Tgl Lahir', ttl);
+        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         drawField('Alamat', pengajuan.alamat || 'Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh');
 
       } else if (namaJenis.includes('keluarga')) {
         drawField('N I K', pengajuan.nik);
         drawField('Nama Lengkap', pengajuan.nama_pemohon);
-        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         const ttl = `${pengajuan.tempat_lahir || '-'}, ${pengajuan.tanggal_lahir ? new Date(pengajuan.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}`;
         drawField('Tempat/Tgl Lahir', ttl);
+        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         drawField('Status Perkawinan', pengajuan.status_perkawinan);
         drawField('Alamat', pengajuan.alamat || 'Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh');
 
       } else if (namaJenis.includes('tanah')) {
         drawField('N I K', pengajuan.nik);
         drawField('Nama Lengkap', pengajuan.nama_pemohon);
-        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         const ttl = `${pengajuan.tempat_lahir || '-'}, ${pengajuan.tanggal_lahir ? new Date(pengajuan.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}`;
         drawField('Tempat/Tgl Lahir', ttl);
+        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         drawField('Pekerjaan', pengajuan.pekerjaan);
         drawField('Alamat', pengajuan.alamat || 'Gampong Ilie Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh');
 
       } else {
         drawField('NIK', pengajuan.nik);
         drawField('Nama Lengkap', pengajuan.nama_pemohon);
-        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         const ttl = `${pengajuan.tempat_lahir || '-'}, ${pengajuan.tanggal_lahir ? new Date(pengajuan.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}`;
         drawField('Tempat/Tgl Lahir', ttl);
+        drawField('Jenis Kelamin', pengajuan.jenis_kelamin);
         drawField('Pekerjaan', pengajuan.pekerjaan);
         drawField('Alamat', pengajuan.alamat || 'Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh');
       }
