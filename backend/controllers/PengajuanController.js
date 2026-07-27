@@ -1006,6 +1006,19 @@ class PengajuanController {
           bodyText = `Benar berdasarkan laporan yang masuk kepada kami bahwa yang namanya tersebut diatas saat ini tinggal dan berdomisili di Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh.`;
         }
 
+        // Dynamically replace placeholders in bodyText with fields values
+        const usedKeys = [];
+        if (bodyText) {
+          Object.keys(fields).forEach(key => {
+            const val = fields[key] || '';
+            const regex = new RegExp(`\\[${key}\\]|\\{${key}\\}|\\{\\{${key}\\}\\}`, 'gi');
+            if (regex.test(bodyText)) {
+              usedKeys.push(key);
+              bodyText = bodyText.replace(regex, val);
+            }
+          });
+        }
+
         if (Array.isArray(parsedFields) && parsedFields.length > 0) {
           // Dynamic fields exist!
           const cleanBody = typeof bodyText === 'string' ? bodyText.replace(/\r/g, '') : bodyText;
@@ -1024,11 +1037,17 @@ class PengajuanController {
             lineY += 18;
           };
 
+          let hasDrawnFields = false;
           parsedFields.forEach(f => {
+            if (usedKeys.includes(f.name)) return; // Skip if it was used in bodyText!
             const val = fields[f.name] || '-';
             drawFieldLocal(f.label, val);
+            hasDrawnFields = true;
           });
-          subSectionY = lineY + 12;
+          
+          if (hasDrawnFields) {
+            subSectionY = lineY + 12;
+          }
         }
       }
 
