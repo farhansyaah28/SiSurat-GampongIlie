@@ -635,16 +635,16 @@ class PengajuanController {
             // Sign block
             const sigX = 350;
             const sigY = 550;
-            doc.text(`Gampong Ilie, ${new Date(pengajuan.tanggal_disetujui || Date.now()).toLocaleDateString('id-ID')}`, sigX, sigY);
-            doc.text('Keuchik Gampong Ilie', sigX, sigY + 15);
+            doc.text(`Gampong Ilie, ${new Date(pengajuan.tanggal_disetujui || Date.now()).toLocaleDateString('id-ID')}`, sigX, sigY, { align: 'center', width: 200 });
+            doc.text('Keuchik Gampong Ilie', sigX, sigY + 15, { align: 'center', width: 200 });
             
-            // QR Code sebagai Tanda Tangan Digital (TTE) di Kanan
-            doc.image(qrBuffer, sigX + 20, sigY + 32, { width: 55, height: 55 });
+            // QR Code sebagai Tanda Tangan Digital (TTE) di Kanan (Centered at 450)
+            doc.image(qrBuffer, 422.5, sigY + 32, { width: 55, height: 55 });
 
             doc.fontSize(11).font('Helvetica-Bold');
-            doc.text('ZAHLUL AMRI', sigX, sigY + 92);
+            doc.text('ZAHLUL AMRI', sigX, sigY + 92, { align: 'center', underline: true, width: 200 });
             doc.fontSize(10).font('Helvetica');
-            doc.text('NIP/NIK: -', sigX, sigY + 107);
+            doc.text('NIP/NIK: -', sigX, sigY + 107, { align: 'center', width: 200 });
             
             templateApplied = true;
           }
@@ -1092,15 +1092,15 @@ class PengajuanController {
 
       // Tanggal & Jabatan (Kanan)
       doc.font('Helvetica').fontSize(11);
-      doc.text(`Banda Aceh, ${formattedDate}`, 350, sigY, { width: 200 });
-      doc.text('Keuchik Gampong Ilie', 350, sigY + 15, { width: 200 });
+      doc.text(`Banda Aceh, ${formattedDate}`, 350, sigY, { align: 'center', width: 200 });
+      doc.text('Keuchik Gampong Ilie', 350, sigY + 15, { align: 'center', width: 200 });
 
-      // QR Code sebagai Tanda Tangan Digital (TTE) di Kanan
-      doc.image(qrBuffer, 370, sigY + 32, { width: 55, height: 55 });
+      // QR Code sebagai Tanda Tangan Digital (TTE) di Kanan (Centered at 450)
+      doc.image(qrBuffer, 422.5, sigY + 32, { width: 55, height: 55 });
 
       // Nama Penandatangan (Kanan)
       doc.font('Helvetica-Bold').fontSize(11).fillColor('#000000');
-      doc.text('ZAHLUL AMRI', 350, sigY + 92, { underline: true, width: 200 });
+      doc.text('ZAHLUL AMRI', 350, sigY + 92, { align: 'center', underline: true, width: 200 });
     }
 
     doc.end();
