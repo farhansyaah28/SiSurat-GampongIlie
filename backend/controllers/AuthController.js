@@ -48,29 +48,8 @@ class AuthController {
         });
       }
 
-      // Decode and save KTP photo if present
-      let foto_ktp = null;
-      if (foto_ktp_base64) {
-        try {
-          const fs = require('fs');
-          const path = require('path');
-          const uploadDir = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, '../uploads');
-          if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-          }
-          const matches = foto_ktp_base64.match(/^data:image\/([a-zA-Z0-9\+]+);base64,(.+)$/);
-          if (matches) {
-            const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
-            const buffer = Buffer.from(matches[2], 'base64');
-            const fileName = `ktp_${nik}_${Date.now()}.${ext}`;
-            const filePath = path.join(uploadDir, fileName);
-            fs.writeFileSync(filePath, buffer);
-            foto_ktp = `/uploads/${fileName}`;
-          }
-        } catch (err) {
-          console.error('Failed to save KTP photo:', err);
-        }
-      }
+      // Save KTP photo as base64 directly to database
+      let foto_ktp = foto_ktp_base64 || null;
 
       // Create user
       const userData = {
