@@ -1006,9 +1006,32 @@ class PengajuanController {
           bodyText = `Benar berdasarkan laporan yang masuk kepada kami bahwa yang namanya tersebut diatas saat ini tinggal dan berdomisili di Gampong Ilie Kecamatan Ulee Kareng Kota Banda Aceh.`;
         }
 
-        // Dynamically replace placeholders in bodyText with fields values
+        // Define core citizen profile fields map for quick placeholder injection
+        const profileFields = {
+          nama: pengajuan.nama_pemohon || '',
+          nama_pemohon: pengajuan.nama_pemohon || '',
+          nik: pengajuan.nik || '',
+          tempat_lahir: pengajuan.tempat_lahir || '',
+          tanggal_lahir: pengajuan.tanggal_lahir ? new Date(pengajuan.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '',
+          jenis_kelamin: pengajuan.jenis_kelamin || '',
+          pekerjaan: pengajuan.pekerjaan || '',
+          alamat: pengajuan.alamat || 'Gampong Ilie',
+          agama: pengajuan.agama || '',
+          status: pengajuan.status_perkawinan || '',
+          status_perkawinan: pengajuan.status_perkawinan || ''
+        };
+
+        // Dynamically replace placeholders in bodyText with profile fields and custom fields values
         const usedKeys = [];
         if (bodyText) {
+          // 1. Profile fields first
+          Object.keys(profileFields).forEach(key => {
+            const val = profileFields[key] || '';
+            const regex = new RegExp(`\\[${key}\\]|\\{${key}\\}|\\{\\{${key}\\}\\}`, 'gi');
+            bodyText = bodyText.replace(regex, val);
+          });
+
+          // 2. Custom fields
           Object.keys(fields).forEach(key => {
             const val = fields[key] || '';
             const regex = new RegExp(`\\[${key}\\]|\\{${key}\\}|\\{\\{${key}\\}\\}`, 'gi');
