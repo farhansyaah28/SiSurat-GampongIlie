@@ -2143,6 +2143,41 @@ if (document.getElementById('addWargaForm')) {
 // --- IMPORT WARGA MASSAL (EXCEL / CSV) LOGIC ---
 let parsedWargaData = [];
 
+window.downloadExcelTemplate = function() {
+  const templateData = [
+    {
+      nik: "1111222233334444",
+      nama: "Budi Santoso",
+      email: "budi@mail.com",
+      no_hp: "081234567890",
+      tempat_lahir: "Banda Aceh",
+      tanggal_lahir: "1995-08-17",
+      jenis_kelamin: "L",
+      agama: "Islam",
+      pekerjaan: "Wiraswasta",
+      status_perkawinan: "Belum Kawin",
+      alamat: "Jl. T. Nyak Arief No. 10"
+    },
+    {
+      nik: "5555666677778888",
+      nama: "Siti Aminah",
+      email: "",
+      no_hp: "085298765432",
+      tempat_lahir: "Pidie",
+      tanggal_lahir: "1998-12-05",
+      jenis_kelamin: "P",
+      agama: "Islam",
+      pekerjaan: "Mahasiswa",
+      status_perkawinan: "Belum Kawin",
+      alamat: "Dusun Gampong Ilie"
+    }
+  ];
+  const worksheet = XLSX.utils.json_to_sheet(templateData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Template Warga");
+  XLSX.writeFile(workbook, "template_impor_warga.xlsx");
+};
+
 window.openImportWargaModal = function() {
   const modal = document.getElementById('importWargaModal');
   if (!modal) return;
