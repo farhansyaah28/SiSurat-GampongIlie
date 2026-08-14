@@ -2093,7 +2093,6 @@ window.openAddWargaModal = function() {
   const form = document.getElementById('addWargaForm');
   if (!modal || !form) return;
   form.reset();
-  document.getElementById('addKtpBase64').value = '';
   modal.classList.remove('hidden');
   modal.classList.add('flex');
 };
@@ -2112,37 +2111,6 @@ if (document.getElementById('btnCancelAddWarga')) {
   document.getElementById('btnCancelAddWarga').addEventListener('click', closeAddWargaModalFunc);
 }
 
-if (document.getElementById('addKtpInput')) {
-  document.getElementById('addKtpInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) {
-      document.getElementById('addKtpBase64').value = '';
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      const img = new Image();
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 1024;
-        let width = img.width;
-        let height = img.height;
-        if (width > MAX_WIDTH) {
-          height = Math.round((height * MAX_WIDTH) / width);
-          width = MAX_WIDTH;
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-        document.getElementById('addKtpBase64').value = dataUrl;
-      };
-      img.src = evt.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
 
 if (document.getElementById('addWargaForm')) {
   document.getElementById('addWargaForm').addEventListener('submit', async (e) => {
