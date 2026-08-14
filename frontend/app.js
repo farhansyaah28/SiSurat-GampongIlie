@@ -2615,28 +2615,48 @@ function renderSuratKeluar(list) {
     if (item.keterangan) {
       try {
         const parsed = JSON.parse(item.keterangan);
-        detailsText = Object.entries(parsed)
-          .map(([k, v]) => `${k.replace('_', ' ')}: ${v}`)
-          .join(', ');
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.is_dynamic) {
+            const fields = parsed.fields || {};
+            const fieldParts = Object.entries(fields)
+              .map(([k, v]) => {
+                const label = k.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                return `${label}: ${v}`;
+              });
+            detailsText = fieldParts.join(', ');
+            if (parsed.keterangan_tambahan && parsed.keterangan_tambahan.trim() !== '') {
+              detailsText = (detailsText ? detailsText + ' ' : '') + `(${parsed.keterangan_tambahan})`;
+            }
+          } else {
+            detailsText = Object.entries(parsed)
+              .map(([k, v]) => `${k.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}: ${v}`)
+              .join(', ');
+          }
+        } else {
+          detailsText = item.keterangan;
+        }
       } catch (e) {
         detailsText = item.keterangan;
       }
+    }
+    if (!detailsText || detailsText.trim() === '') {
+      detailsText = '-';
     }
 
     html += `
       <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
         <td class="px-6 py-4 text-sm font-bold text-gray-700">${index + 1}</td>
-        <td class="px-6 py-4 text-sm text-gray-600">${dateFormatted}</td>
-        <td class="px-6 py-4 text-sm font-bold text-primary">${item.nomor_surat || '-'}</td>
+        <td class="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">${dateFormatted}</td>
+        <td class="px-6 py-4 text-sm font-bold text-primary whitespace-nowrap">${item.nomor_surat || '-'}</td>
         <td class="px-6 py-4 text-sm text-gray-700">
-          <div class="font-bold">${item.nama_pemohon || 'Warga'}</div>
-          <div class="text-xs text-gray-400">NIK: ${item.nik || '-'}</div>
+          <div class="font-bold whitespace-nowrap">${item.nama_pemohon || 'Warga'}</div>
+          <div class="text-xs text-gray-400 font-mono whitespace-nowrap">NIK: ${item.nik || '-'}</div>
         </td>
         <td class="px-6 py-4 text-sm text-gray-600">
-          <span class="px-2.5 py-1 bg-primary/10 text-primary rounded-lg text-xs font-bold">${item.nama_jenis}</span>
+          <span class="px-2.5 py-1 bg-primary/10 text-primary rounded-lg text-xs font-bold whitespace-nowrap">${item.nama_jenis}</span>
         </td>
-        <td class="px-6 py-4 text-xs text-gray-400 max-w-xs truncate" title="${detailsText}">${detailsText}</td>
-        <td class="px-6 py-4 text-center">
+        <td class="px-6 py-4 text-xs text-gray-500 max-w-sm truncate" title="${detailsText}">${detailsText}</td>
+        <td class="px-6 py-4 text-center whitespace-nowrap">
           <button onclick="downloadPdf(${item.id_pengajuan})" class="p-2 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg transition-all" title="Unduh Berkas PDF">
             <i class="fa-solid fa-file-arrow-down"></i>
           </button>
