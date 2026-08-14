@@ -1323,9 +1323,8 @@ async function generateNomorSurat(id_pengajuan) {
     `SELECT COUNT(*) as count 
      FROM pengajuan_surat 
      WHERE status = 'disetujui' 
-       AND id_jenis = ? 
        AND EXTRACT(YEAR FROM tanggal_disetujui) = ?`,
-    [id_jenis, currentYear]
+    [currentYear]
   );
   
   const count = parseInt(rows[0].count || '0', 10);
