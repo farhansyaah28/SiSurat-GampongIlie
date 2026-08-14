@@ -1960,25 +1960,25 @@ function renderWargaTable(list) {
 
     const rowHtml = `
       <tr class="hover:bg-gray-50/50 transition-colors">
-        <td class="px-6 py-4">
+        <td class="px-6 py-4 whitespace-nowrap">
           <div class="font-bold text-gray-800">${warga.nama}</div>
           <div class="text-xs text-gray-500 font-mono">${warga.nik || '-'}</div>
         </td>
-        <td class="px-6 py-4 text-sm text-gray-600">${warga.email || '-'}</td>
-        <td class="px-6 py-4 text-xs text-gray-600">
+        <td class="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">${warga.email || '-'}</td>
+        <td class="px-6 py-4 text-xs text-gray-600 whitespace-nowrap">
           <div>${ttl}</div>
           <div class="text-gray-400 font-medium">${warga.jenis_kelamin || '-'}</div>
         </td>
-        <td class="px-6 py-4 text-xs text-gray-600">
+        <td class="px-6 py-4 text-xs text-gray-600 whitespace-nowrap">
           <div>${warga.agama || '-'}</div>
           <div class="text-gray-400 font-medium">${warga.pekerjaan || '-'}</div>
         </td>
-        <td class="px-6 py-4 text-xs text-gray-600">${warga.status_perkawinan || '-'}</td>
+        <td class="px-6 py-4 text-xs text-gray-600 whitespace-nowrap">${warga.status_perkawinan || '-'}</td>
         <td class="px-6 py-4 text-xs text-gray-600 max-w-xs truncate">${warga.alamat || '-'}</td>
-        <td class="px-6 py-4">
+        <td class="px-6 py-4 whitespace-nowrap">
           <span class="status-badge ${statusClass}">${statusText}</span>
         </td>
-        <td class="px-6 py-4">
+        <td class="px-6 py-4 whitespace-nowrap">
           <div class="flex items-center justify-center gap-1.5">
             <button onclick="openEditWargaModal(${warga.id_user})" class="btn-outline !px-2.5 !py-1 text-xs">
               <i class="fa-solid fa-user-pen"></i> Edit
