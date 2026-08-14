@@ -2144,9 +2144,6 @@ if (document.getElementById('addKtpInput')) {
 if (document.getElementById('addWargaForm')) {
   document.getElementById('addWargaForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!document.getElementById('addKtpBase64').value) {
-      return showToast('Harap pilih foto KTP yang valid.');
-    }
     showLoader();
     const fd = new FormData(e.target);
     const body = Object.fromEntries(fd.entries());
