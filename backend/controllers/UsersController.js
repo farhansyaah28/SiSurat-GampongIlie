@@ -265,6 +265,42 @@ class UsersController {
       res.status(500).json({ success: false, message: 'Terjadi kesalahan saat menyetel ulang sandi' });
     }
   }
+
+  static async delete(req, res) {
+    try {
+      const { id } = req.params;
+      const actor = req.user;
+
+      const user = await User.findById(id);
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'Warga tidak ditemukan' });
+      }
+
+      if (user.role !== 'warga') {
+        return res.status(403).json({ success: false, message: 'Hanya akun warga yang dapat dihapus' });
+      }
+
+      await User.delete(id);
+
+      await logAudit({
+        id_user: actor.id_user,
+        aksi: 'DELETE_USER',
+        deskripsi: `Aparatur desa menghapus akun warga: ${user.nama} (NIK: ${user.nik})`,
+        tabel_target: 'users',
+        id_target: id,
+        ip_address: req.ip
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Data warga berhasil dihapus'
+      });
+    } catch (error) {
+      console.error('Delete citizen error:', error);
+      res.status(500).json({ success: false, message: 'Terjadi kesalahan saat menghapus data warga' });
+    }
+  }
 }
 
 module.exports = UsersController;
+

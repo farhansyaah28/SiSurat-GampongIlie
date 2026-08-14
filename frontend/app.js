@@ -1979,12 +1979,15 @@ function renderWargaTable(list) {
           <span class="status-badge ${statusClass}">${statusText}</span>
         </td>
         <td class="px-6 py-4">
-          <div class="flex items-center justify-center gap-2">
-            <button onclick="openEditWargaModal(${warga.id_user})" class="btn-outline">
+          <div class="flex items-center justify-center gap-1.5">
+            <button onclick="openEditWargaModal(${warga.id_user})" class="btn-outline !px-2.5 !py-1 text-xs">
               <i class="fa-solid fa-user-pen"></i> Edit
             </button>
-            <button onclick="triggerResetPassword(${warga.id_user})" class="btn-danger-outline">
+            <button onclick="triggerResetPassword(${warga.id_user})" class="btn-danger-outline !px-2.5 !py-1 text-xs">
               <i class="fa-solid fa-key"></i> Reset
+            </button>
+            <button onclick="triggerDeleteWarga(${warga.id_user})" class="btn-danger-outline !px-2.5 !py-1 text-xs border-red-500 text-red-600 hover:bg-red-500 hover:text-white">
+              <i class="fa-solid fa-trash"></i> Hapus
             </button>
           </div>
         </td>
@@ -2539,6 +2542,31 @@ if (document.getElementById('btnConfirmResetClose')) {
     loadWargaList();
   });
 }
+
+// Delete Citizen Action
+window.triggerDeleteWarga = function(id) {
+  const warga = wargaListGlobal.find(w => w.id_user === id);
+  if (!warga) return;
+
+  customConfirm(
+    'Hapus Data Warga?',
+    `Apakah Anda yakin ingin menghapus data warga <strong>${warga.nama}</strong>? Seluruh riwayat pengajuan surat warga ini juga akan terhapus.`,
+    async () => {
+      showLoader();
+      const r = await apiFetch(`/users/${id}`, { method: 'DELETE' });
+      hideLoader();
+      if (r.success) {
+        showToast(r.message || 'Data warga berhasil dihapus');
+        loadWargaList();
+      } else {
+        showToast(r.message || 'Gagal menghapus warga');
+      }
+    },
+    'fa-trash',
+    'text-red-600',
+    'bg-red-50'
+  );
+};
 
 // --- BUKU SURAT KELUAR LOGIC ---
 let allSuratKeluar = [];

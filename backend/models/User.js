@@ -135,6 +135,15 @@ class User {
     );
     return result;
   }
+
+  static async delete(id) {
+    const [result] = await pool.execute(
+      'DELETE FROM users WHERE id_user = ?',
+      [id]
+    );
+    return result;
+  }
 }
 
 module.exports = User;
+

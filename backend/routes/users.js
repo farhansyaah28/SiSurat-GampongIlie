@@ -15,6 +15,10 @@ router.post('/bulk', verifyToken, verifyRole(['operator','kepala_desa']), UsersC
 // Operator/Kades can update citizen info
 router.put('/:id', verifyToken, verifyRole(['operator','kepala_desa']), UsersController.update);
 
+// Operator/Kades can delete citizen
+router.delete('/:id', verifyToken, verifyRole(['operator','kepala_desa']), UsersController.delete);
+
+
 // Operator/Kades can reset citizen password
 router.post('/:id/reset-password', verifyToken, verifyRole(['operator','kepala_desa']), UsersController.resetPassword);
 
