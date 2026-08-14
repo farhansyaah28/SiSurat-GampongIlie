@@ -2140,6 +2140,179 @@ if (document.getElementById('addWargaForm')) {
   });
 }
 
+// --- IMPORT WARGA MASSAL (EXCEL / CSV) LOGIC ---
+let parsedWargaData = [];
+
+window.openImportWargaModal = function() {
+  const modal = document.getElementById('importWargaModal');
+  if (!modal) return;
+  document.getElementById('importWargaFile').value = '';
+  document.getElementById('importPreviewArea').classList.add('hidden');
+  document.getElementById('importPreviewBody').innerHTML = '';
+  parsedWargaData = [];
+  
+  const submitBtn = document.getElementById('btnSubmitImport');
+  submitBtn.disabled = true;
+  submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+  
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+};
+
+function closeImportWargaModalFunc() {
+  const modal = document.getElementById('importWargaModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+if (document.getElementById('closeImportWargaModal')) {
+  document.getElementById('closeImportWargaModal').addEventListener('click', closeImportWargaModalFunc);
+}
+if (document.getElementById('btnCancelImport')) {
+  document.getElementById('btnCancelImport').addEventListener('click', closeImportWargaModalFunc);
+}
+
+if (document.getElementById('btnParseFile')) {
+  document.getElementById('btnParseFile').addEventListener('click', () => {
+    const fileInput = document.getElementById('importWargaFile');
+    const file = fileInput.files[0];
+    if (!file) return showToast('Harap pilih berkas terlebih dahulu!');
+    
+    showLoader();
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        
+        const rows = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
+        if (rows.length === 0) {
+          hideLoader();
+          return showToast('Berkas kosong atau format salah.');
+        }
+        
+        parsedWargaData = rows.map(r => {
+          const normalized = {};
+          for (let key in r) {
+            normalized[key.toLowerCase().trim()] = r[key];
+          }
+          return normalized;
+        });
+        
+        const firstRow = parsedWargaData[0];
+        if (!('nik' in firstRow) || !('nama' in firstRow) || !('email' in firstRow)) {
+          hideLoader();
+          return showToast('Berkas harus memiliki kolom "nik", "nama", dan "email"!');
+        }
+        
+        const tbody = document.getElementById('importPreviewBody');
+        tbody.innerHTML = '';
+        let validRows = 0;
+        
+        parsedWargaData.forEach((w, index) => {
+          const cleanNik = String(w.nik).trim();
+          const cleanNama = String(w.nama).trim();
+          const cleanEmail = String(w.email).trim();
+          const isNikValid = /^[0-9]{16}$/.test(cleanNik);
+          
+          let rowClass = '';
+          let errorText = '';
+          if (!isNikValid) {
+            rowClass = 'bg-red-50 text-red-700';
+            errorText = ' (NIK harus 16 digit angka)';
+          } else if (!cleanNama) {
+            rowClass = 'bg-red-50 text-red-700';
+            errorText = ' (Nama wajib diisi)';
+          } else if (!cleanEmail) {
+            rowClass = 'bg-red-50 text-red-700';
+            errorText = ' (Email wajib diisi)';
+          } else {
+            validRows++;
+          }
+          
+          tbody.insertAdjacentHTML('beforeend', `
+            <tr class="${rowClass}">
+              <td class="px-4 py-2 border-b font-mono">${cleanNik}${errorText}</td>
+              <td class="px-4 py-2 border-b">${cleanNama}</td>
+              <td class="px-4 py-2 border-b">${cleanEmail}</td>
+              <td class="px-4 py-2 border-b">${w.no_hp || '-'}</td>
+              <td class="px-4 py-2 border-b truncate max-w-[150px]">${w.alamat || '-'}</td>
+            </tr>
+          `);
+        });
+        
+        document.getElementById('importCount').innerText = parsedWargaData.length;
+        document.getElementById('importPreviewArea').classList.remove('hidden');
+        
+        const submitBtn = document.getElementById('btnSubmitImport');
+        if (validRows > 0) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+          submitBtn.disabled = true;
+          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          showToast('Tidak ada data valid yang bisa diimpor.');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal memproses berkas. Pastikan format berkas benar.');
+      } finally {
+        hideLoader();
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+if (document.getElementById('btnSubmitImport')) {
+  document.getElementById('btnSubmitImport').addEventListener('click', async () => {
+    if (parsedWargaData.length === 0) return;
+    
+    showLoader();
+    const r = await apiFetch('/users/bulk', {
+      method: 'POST',
+      body: { warga: parsedWargaData }
+    });
+    hideLoader();
+    
+    if (r.success) {
+      const successCount = r.successCount || 0;
+      const failedCount = r.failedCount || 0;
+      const details = r.details || [];
+      
+      let reportMsg = `Berhasil mengimpor ${successCount} warga.`;
+      if (failedCount > 0) {
+        reportMsg += ` Gagal: ${failedCount} (Lihat konsol untuk daftar NIK ganda).`;
+        console.warn('Gagal impor:', details.filter(d => !d.success));
+      }
+      
+      let pwListHtml = '';
+      const createdUsers = details.filter(d => d.success);
+      if (createdUsers.length > 0) {
+        pwListHtml = `<div class="mt-3 text-left max-h-40 overflow-y-auto bg-gray-50 p-2.5 rounded-lg border border-dashed text-xs font-mono space-y-1">` +
+          createdUsers.map(u => `<div>${u.nik} - ${u.nama}: <strong>${u.password}</strong></div>`).join('') +
+          `</div>`;
+      }
+      
+      customAlert('Hasil Impor Massal', `
+        <div class="text-sm space-y-2">
+          <p>${reportMsg}</p>
+          ${pwListHtml ? '<p class="text-xs text-gray-500 font-bold mt-2">Daftar Kata Sandi Default Warga Baru:</p>' + pwListHtml : ''}
+        </div>
+      `, 'fa-circle-check', 'text-green-600', 'bg-green-50');
+      
+      closeImportWargaModalFunc();
+      loadWargaList();
+    } else {
+      showToast(r.message || 'Gagal memproses impor massal');
+    }
+  });
+}
+
 // Edit Modal Opening & Setup
 window.openEditWargaModal = function(id) {
   const warga = wargaListGlobal.find(w => w.id_user === id);

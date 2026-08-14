@@ -42,6 +42,106 @@ class UsersController {
     }
   }
 
+  static async bulkCreate(req, res) {
+    try {
+      const { warga } = req.body;
+      if (!warga || !Array.isArray(warga)) {
+        return res.status(400).json({ success: false, message: 'Data warga tidak valid' });
+      }
+
+      let successCount = 0;
+      let failedCount = 0;
+      const details = [];
+
+      for (const w of warga) {
+        const nik = w.nik ? String(w.nik).trim() : '';
+        const nama = w.nama ? String(w.nama).trim() : '';
+        const email = w.email ? String(w.email).trim() : '';
+
+        // Validate basic fields
+        if (!nik || !nama || !email || !/^[0-9]{16}$/.test(nik)) {
+          failedCount++;
+          details.push({
+            nik,
+            nama,
+            success: false,
+            message: 'Format NIK, nama, atau email tidak valid / kosong'
+          });
+          continue;
+        }
+
+        // Check if NIK already exists
+        const existingUser = await User.findByNIK(nik);
+        if (existingUser) {
+          failedCount++;
+          details.push({
+            nik,
+            nama,
+            success: false,
+            message: 'NIK sudah terdaftar di sistem'
+          });
+          continue;
+        }
+
+        // Generate default password (first 4 letters of name + last 3 of NIK)
+        const cleanName = nama.replace(/[^a-zA-Z]/g, '').padEnd(4, 'a').substring(0, 4).toLowerCase();
+        const defaultPassword = cleanName + nik.substring(nik.length - 3);
+
+        const userData = {
+          nama,
+          nik,
+          email,
+          password: defaultPassword,
+          role: 'warga',
+          no_hp: w.no_hp || null,
+          tempat_lahir: w.tempat_lahir || null,
+          tanggal_lahir: w.tanggal_lahir || null,
+          jenis_kelamin: w.jenis_kelamin || null,
+          pekerjaan: w.pekerjaan || null,
+          status_perkawinan: w.status_perkawinan || null,
+          agama: w.agama || null,
+          alamat: w.alamat || null,
+          foto_ktp: null // Default null for bulk imports
+        };
+
+        try {
+          const result = await User.create(userData);
+          successCount++;
+          details.push({
+            nik,
+            nama,
+            password: defaultPassword,
+            success: true,
+            id_user: result.insertId
+          });
+        } catch (insertError) {
+          console.error(`Error inserting resident NIK ${nik}:`, insertError);
+          failedCount++;
+          details.push({
+            nik,
+            nama,
+            success: false,
+            message: 'Gagal memasukkan data ke database'
+          });
+        }
+      }
+
+      if (successCount > 0) {
+        logAudit(req.user.id_user, 'BULK_CREATE_USERS', `Mengimpor ${successCount} warga secara massal`);
+      }
+
+      res.status(200).json({
+        success: true,
+        successCount,
+        failedCount,
+        details
+      });
+    } catch (error) {
+      console.error('Bulk create error:', error);
+      res.status(500).json({ success: false, message: 'Terjadi kesalahan sistem' });
+    }
+  }
+
   static async list(req, res) {
     try {
       const { role } = req.query;

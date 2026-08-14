@@ -9,6 +9,9 @@ router.get('/', verifyToken, verifyRole(['operator','kepala_desa']), UsersContro
 // Operator/Kades can create a new citizen
 router.post('/', verifyToken, verifyRole(['operator','kepala_desa']), UsersController.create);
 
+// Operator/Kades can bulk create citizens
+router.post('/bulk', verifyToken, verifyRole(['operator','kepala_desa']), UsersController.bulkCreate);
+
 // Operator/Kades can update citizen info
 router.put('/:id', verifyToken, verifyRole(['operator','kepala_desa']), UsersController.update);
 
