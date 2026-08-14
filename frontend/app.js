@@ -662,7 +662,11 @@ async function refreshProfile(){
              });
            }
         }
-        if (path.includes('pengajuan.html')) loadJenisSuratOptions();
+         if (path.includes('pengajuan.html')) {
+           if (!checkProfileCompleteness()) {
+             loadJenisSuratOptions();
+           }
+         }
         if (path.includes('riwayat.html')) loadMyPengajuan();
         if (path.includes('verifikasi.html')) {
            const urlParams = new URLSearchParams(window.location.search);
@@ -771,6 +775,53 @@ async function loadDashboardStats() {
          </div>
       `).join('');
   }
+}
+
+function checkProfileCompleteness() {
+  const path = window.location.pathname.toLowerCase();
+  if (!path.includes('pengajuan.html')) return false;
+  if (!window.currentUser) return false;
+  if (window.currentUser.role !== 'warga') return false;
+
+  const user = window.currentUser;
+  const required = [
+    'tempat_lahir',
+    'tanggal_lahir',
+    'jenis_kelamin',
+    'pekerjaan',
+    'status_perkawinan',
+    'agama',
+    'alamat'
+  ];
+
+  const missing = required.filter(field => !user[field] || user[field].toString().trim() === '');
+  
+  if (missing.length > 0) {
+    const formSec = el('#dash-pengajuan');
+    if (formSec) {
+      formSec.innerHTML = `
+        <div class="max-w-xl mx-auto glass-card p-8 bg-white text-center border-t-4 border-amber-500 shadow-xl rounded-2xl animate-fade-in mt-6">
+          <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+            <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
+          </div>
+          <h3 class="font-bold text-xl text-gray-800 mb-2">Profil Belum Lengkap</h3>
+          <p class="text-sm text-gray-500 mb-6 leading-relaxed">
+            Mohon maaf, Anda belum dapat mengajukan surat karena data profil Anda belum lengkap. Silakan lengkapi profil Anda terlebih dahulu untuk melanjutkan.
+          </p>
+          <div class="flex flex-col gap-2.5">
+            <button onclick="showProfileModal(window.currentUser)" class="btn-primary w-full shadow-lg">
+              <i class="fa-solid fa-user-pen"></i> Lengkapi Profil Sekarang
+            </button>
+            <a href="dashboard.html" class="px-5 py-2.5 text-sm font-medium border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-center text-gray-700">
+              Kembali ke Dashboard
+            </a>
+          </div>
+        </div>
+      `;
+    }
+    return true;
+  }
+  return false;
 }
 
 // --- PENGAJUAN ---
@@ -1724,6 +1775,11 @@ function showProfileModal(userData) {
         modal.classList.remove('flex');
         modal.classList.add('hidden');
         await refreshProfile();
+        if (window.location.pathname.toLowerCase().includes('pengajuan.html')) {
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
       } else {
         showToast(r.message || 'Gagal menyimpan profil');
       }

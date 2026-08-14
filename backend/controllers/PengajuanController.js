@@ -50,6 +50,32 @@ class PengajuanController {
         });
       }
 
+      // Check if citizen profile is complete
+      if (req.user.role === 'warga') {
+        const user = await User.findById(id_user);
+        if (!user) {
+          return res.status(404).json({ success: false, message: 'Data warga tidak ditemukan' });
+        }
+        const requiredFields = [
+          { name: 'tempat_lahir', label: 'Tempat Lahir' },
+          { name: 'tanggal_lahir', label: 'Tanggal Lahir' },
+          { name: 'jenis_kelamin', label: 'Jenis Kelamin' },
+          { name: 'pekerjaan', label: 'Pekerjaan' },
+          { name: 'status_perkawinan', label: 'Status Perkawinan' },
+          { name: 'agama', label: 'Agama' },
+          { name: 'alamat', label: 'Alamat' }
+        ];
+        const missing = requiredFields.filter(f => !user[f.name] || user[f.name].toString().trim() === '');
+        if (missing.length > 0) {
+          const missingLabels = missing.map(f => f.label).join(', ');
+          return res.status(400).json({
+            success: false,
+            message: `Profil Anda belum lengkap. Harap lengkapi data berikut di menu Profil terlebih dahulu: ${missingLabels}`
+          });
+        }
+      }
+
+
       // Decode and save KK photo if present
       let lampiran_kk = null;
       if (lampiran_kk_base64) {
