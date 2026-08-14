@@ -3,6 +3,45 @@ const { logAudit } = require('../utils/auditLogger');
 const pool = require('../config/database');
 
 class UsersController {
+  static async create(req, res) {
+    try {
+      const { nik, nama, email } = req.body;
+      if (!nik || !nama || !email) {
+        return res.status(400).json({ success: false, message: 'NIK, Nama, dan Email wajib diisi' });
+      }
+
+      // Check if NIK already exists
+      const existingUser = await User.findByNIK(nik);
+      if (existingUser) {
+        return res.status(400).json({ success: false, message: 'NIK sudah terdaftar di sistem' });
+      }
+
+      // Generate default password (e.g., first 4 letters of name + last 3 of NIK)
+      const cleanName = nama.replace(/[^a-zA-Z]/g, '').padEnd(4, 'a').substring(0, 4).toLowerCase();
+      const defaultPassword = cleanName + nik.substring(nik.length - 3);
+
+      const userData = {
+        ...req.body,
+        password: defaultPassword,
+        role: 'warga'
+      };
+
+      const result = await User.create(userData);
+
+      logAudit(req.user.id_user, 'CREATE_USER', `Mendaftarkan warga baru NIK: ${nik}`);
+
+      res.status(201).json({ 
+        success: true, 
+        message: 'Warga berhasil didaftarkan',
+        defaultPassword: defaultPassword,
+        id_user: result.insertId
+      });
+    } catch (error) {
+      console.error('Create user error:', error);
+      res.status(500).json({ success: false, message: 'Gagal mendaftarkan warga' });
+    }
+  }
+
   static async list(req, res) {
     try {
       const { role } = req.query;

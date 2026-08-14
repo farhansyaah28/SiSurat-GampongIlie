@@ -462,19 +462,7 @@ function updateActiveMenuState() {
   }
 }
 
-function switchAuthTab(tabName) {
-  if (tabName === 'login') {
-    el('#loginForm').classList.remove('hidden');
-    el('#registerForm').classList.add('hidden');
-    el('#tabBtnLogin').className = 'flex-1 py-3 font-bold text-primary border-b-2 border-primary transition-all';
-    el('#tabBtnRegister').className = 'flex-1 py-3 font-medium text-gray-500 border-b-2 border-transparent transition-all hover:text-primary';
-  } else {
-    el('#loginForm').classList.add('hidden');
-    el('#registerForm').classList.remove('hidden');
-    el('#tabBtnLogin').className = 'flex-1 py-3 font-medium text-gray-500 border-b-2 border-transparent transition-all hover:text-primary';
-    el('#tabBtnRegister').className = 'flex-1 py-3 font-bold text-primary border-b-2 border-primary transition-all';
-  }
-}
+
 
 // Extractor Fetch wrapper
 async function apiFetch(path, opts={}){
@@ -497,21 +485,7 @@ async function apiFetch(path, opts={}){
 }
 
 // --- AUTH LOGIC ---
-if(el('#registerForm')) {
-  el('#registerForm').addEventListener('submit', async e=>{
-    e.preventDefault();
-    showLoader();
-    const fd = new FormData(e.target);
-    const body = Object.fromEntries(fd.entries());
-    const r = await apiFetch('/auth/register', {method:'POST', body});
-    hideLoader();
-    if(r.success) { 
-      showToast('Registrasi berhasil! Mengalihkan ke halaman login...'); 
-      setTimeout(() => { window.location.href = 'auth.html'; }, 1500);
-    }
-    else showToast(r.message||JSON.stringify(r));
-  });
-}
+
 
 if(el('#loginForm')) {
   el('#loginForm').addEventListener('submit', async e=>{
@@ -2085,6 +2059,84 @@ if (document.getElementById('wargaSearchInput')) {
     }
     currentPage = 1;
     renderWargaTable(filteredWargaList);
+  });
+}
+
+// --- ADD WARGA MODAL LOGIC ---
+window.openAddWargaModal = function() {
+  const modal = document.getElementById('addWargaModal');
+  const form = document.getElementById('addWargaForm');
+  if (!modal || !form) return;
+  form.reset();
+  document.getElementById('addKtpBase64').value = '';
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+};
+
+function closeAddWargaModalFunc() {
+  const modal = document.getElementById('addWargaModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+if (document.getElementById('closeAddWargaModal')) {
+  document.getElementById('closeAddWargaModal').addEventListener('click', closeAddWargaModalFunc);
+}
+if (document.getElementById('btnCancelAddWarga')) {
+  document.getElementById('btnCancelAddWarga').addEventListener('click', closeAddWargaModalFunc);
+}
+
+if (document.getElementById('addKtpInput')) {
+  document.getElementById('addKtpInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) {
+      document.getElementById('addKtpBase64').value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1024;
+        let width = img.width;
+        let height = img.height;
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        document.getElementById('addKtpBase64').value = dataUrl;
+      };
+      img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+if (document.getElementById('addWargaForm')) {
+  document.getElementById('addWargaForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!document.getElementById('addKtpBase64').value) {
+      return showToast('Harap pilih foto KTP yang valid.');
+    }
+    showLoader();
+    const fd = new FormData(e.target);
+    const body = Object.fromEntries(fd.entries());
+    const r = await apiFetch('/users', {method:'POST', body});
+    hideLoader();
+    if (r.success) {
+      showToast('Warga baru berhasil ditambahkan! Sandi default: ' + (r.defaultPassword || ''));
+      closeAddWargaModalFunc();
+      loadWargaList();
+    } else {
+      showToast(r.message || 'Gagal mendaftarkan warga');
+    }
   });
 }
 
