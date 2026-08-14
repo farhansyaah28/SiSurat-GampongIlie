@@ -2204,9 +2204,9 @@ if (document.getElementById('btnParseFile')) {
         });
         
         const firstRow = parsedWargaData[0];
-        if (!('nik' in firstRow) || !('nama' in firstRow) || !('email' in firstRow)) {
+        if (!('nik' in firstRow) || !('nama' in firstRow)) {
           hideLoader();
-          return showToast('Berkas harus memiliki kolom "nik", "nama", dan "email"!');
+          return showToast('Berkas harus memiliki kolom "nik" dan "nama"!');
         }
         
         const tbody = document.getElementById('importPreviewBody');
@@ -2216,7 +2216,7 @@ if (document.getElementById('btnParseFile')) {
         parsedWargaData.forEach((w, index) => {
           const cleanNik = String(w.nik).trim();
           const cleanNama = String(w.nama).trim();
-          const cleanEmail = String(w.email).trim();
+          const cleanEmail = w.email ? String(w.email).trim() : '';
           const isNikValid = /^[0-9]{16}$/.test(cleanNik);
           
           let rowClass = '';
@@ -2227,9 +2227,6 @@ if (document.getElementById('btnParseFile')) {
           } else if (!cleanNama) {
             rowClass = 'bg-red-50 text-red-700';
             errorText = ' (Nama wajib diisi)';
-          } else if (!cleanEmail) {
-            rowClass = 'bg-red-50 text-red-700';
-            errorText = ' (Email wajib diisi)';
           } else {
             validRows++;
           }

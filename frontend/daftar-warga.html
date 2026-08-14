@@ -276,8 +276,8 @@
             <input type="text" name="nik" class="input-style !py-2 !px-3 text-sm" pattern="[0-9]{16}" minlength="16" maxlength="16" title="NIK harus berupa 16 digit angka" required>
           </div>
           <div>
-            <label class="block text-xs font-bold text-gray-500 mb-1">Email Aktif *</label>
-            <input type="email" name="email" class="input-style !py-2 !px-3 text-sm" required>
+            <label class="block text-xs font-bold text-gray-500 mb-1">Email Aktif</label>
+            <input type="email" name="email" class="input-style !py-2 !px-3 text-sm">
           </div>
           <div>
             <label class="block text-xs font-bold text-gray-500 mb-1">No. HP / WhatsApp</label>
@@ -401,8 +401,8 @@
           <p class="font-bold mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Petunjuk Unggah Berkas:</p>
           <ul class="list-disc pl-4 space-y-1">
             <li>Format berkas wajib **Excel (.xlsx, .xls)** atau **CSV**.</li>
-            <li>Baris pertama harus berupa **Header Nama Kolom** dengan ejaan persis: <code class="bg-green-100 px-1 py-0.5 rounded font-mono font-bold">nik</code>, <code class="bg-green-100 px-1 py-0.5 rounded font-mono font-bold">nama</code>, <code class="bg-green-100 px-1 py-0.5 rounded font-mono font-bold">email</code>.</li>
-            <li>Kolom opsional yang didukung: <code class="font-mono">no_hp</code>, <code class="font-mono">tempat_lahir</code>, <code class="font-mono">tanggal_lahir</code> (format YYYY-MM-DD), <code class="font-mono">jenis_kelamin</code> (L/P), <code class="font-mono">agama</code>, <code class="font-mono">pekerjaan</code>, <code class="font-mono">status_perkawinan</code>, <code class="font-mono">alamat</code>.</li>
+            <li>Baris pertama harus berupa **Header Nama Kolom** dengan ejaan persis: <code class="bg-green-100 px-1 py-0.5 rounded font-mono font-bold">nik</code> dan <code class="bg-green-100 px-1 py-0.5 rounded font-mono font-bold">nama</code>.</li>
+            <li>Kolom opsional yang didukung: <code class="font-mono">email</code>, <code class="font-mono">no_hp</code>, <code class="font-mono">tempat_lahir</code>, <code class="font-mono">tanggal_lahir</code> (format YYYY-MM-DD), <code class="font-mono">jenis_kelamin</code> (L/P), <code class="font-mono">agama</code>, <code class="font-mono">pekerjaan</code>, <code class="font-mono">status_perkawinan</code>, <code class="font-mono">alamat</code>.</li>
             <li>Kolom NIK wajib diisi 16 digit angka. Sandi akan otomatis dibuat secara acak dan ditunjukkan setelah impor berhasil.</li>
           </ul>
         </div>

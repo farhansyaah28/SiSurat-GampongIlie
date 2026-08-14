@@ -5,9 +5,14 @@ const pool = require('../config/database');
 class UsersController {
   static async create(req, res) {
     try {
-      const { nik, nama, email } = req.body;
-      if (!nik || !nama || !email) {
-        return res.status(400).json({ success: false, message: 'NIK, Nama, dan Email wajib diisi' });
+      const { nik, nama } = req.body;
+      let email = req.body.email;
+      if (!nik || !nama) {
+        return res.status(400).json({ success: false, message: 'NIK dan Nama wajib diisi' });
+      }
+
+      if (!email || String(email).trim() === '') {
+        email = `${nik}@gampong.id`;
       }
 
       // Check if NIK already exists
@@ -22,6 +27,7 @@ class UsersController {
 
       const userData = {
         ...req.body,
+        email,
         password: defaultPassword,
         role: 'warga'
       };
@@ -56,18 +62,22 @@ class UsersController {
       for (const w of warga) {
         const nik = w.nik ? String(w.nik).trim() : '';
         const nama = w.nama ? String(w.nama).trim() : '';
-        const email = w.email ? String(w.email).trim() : '';
+        let email = w.email ? String(w.email).trim() : '';
 
         // Validate basic fields
-        if (!nik || !nama || !email || !/^[0-9]{16}$/.test(nik)) {
+        if (!nik || !nama || !/^[0-9]{16}$/.test(nik)) {
           failedCount++;
           details.push({
             nik,
             nama,
             success: false,
-            message: 'Format NIK, nama, atau email tidak valid / kosong'
+            message: 'Format NIK atau nama tidak valid / kosong'
           });
           continue;
+        }
+
+        if (!email) {
+          email = `${nik}@gampong.id`;
         }
 
         // Check if NIK already exists
