@@ -1922,9 +1922,7 @@ async function loadWargaList() {
   hideLoader();
   if (r.success && r.data) {
     wargaListGlobal = r.data;
-    filteredWargaList = [...wargaListGlobal];
-    currentPage = 1;
-    renderWargaTable(filteredWargaList);
+    filterAndSortWarga();
     setupPaginationEvents();
   } else {
     showToast('Gagal memuat daftar warga');
@@ -2045,21 +2043,45 @@ function setupPaginationEvents() {
   }
 }
 
-// Live Search Filter
+function filterAndSortWarga() {
+  const queryInput = document.getElementById('wargaSearchInput');
+  const sortSelect = document.getElementById('wargaSortSelect');
+  
+  const query = queryInput ? queryInput.value.toLowerCase().trim() : '';
+  const sortBy = sortSelect ? sortSelect.value : 'newest';
+
+  // 1. Filter
+  let result = [...wargaListGlobal];
+  if (query) {
+    result = result.filter(w => 
+      (w.nama && w.nama.toLowerCase().includes(query)) || 
+      (w.nik && w.nik.includes(query))
+    );
+  }
+
+  // 2. Sort
+  if (sortBy === 'az') {
+    result.sort((a, b) => (a.nama || '').localeCompare(b.nama || '', 'id'));
+  } else if (sortBy === 'za') {
+    result.sort((a, b) => (b.nama || '').localeCompare(a.nama || '', 'id'));
+  } else if (sortBy === 'oldest') {
+    result.sort((a, b) => (a.id_user || 0) - (b.id_user || 0));
+  } else {
+    // newest (default)
+    result.sort((a, b) => (b.id_user || 0) - (a.id_user || 0));
+  }
+
+  filteredWargaList = result;
+  currentPage = 1;
+  renderWargaTable(filteredWargaList);
+}
+
+// Live Search & Sort Filters
 if (document.getElementById('wargaSearchInput')) {
-  document.getElementById('wargaSearchInput').addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase().trim();
-    if (!query) {
-      filteredWargaList = [...wargaListGlobal];
-    } else {
-      filteredWargaList = wargaListGlobal.filter(w => 
-        (w.nama && w.nama.toLowerCase().includes(query)) || 
-        (w.nik && w.nik.includes(query))
-      );
-    }
-    currentPage = 1;
-    renderWargaTable(filteredWargaList);
-  });
+  document.getElementById('wargaSearchInput').addEventListener('input', filterAndSortWarga);
+}
+if (document.getElementById('wargaSortSelect')) {
+  document.getElementById('wargaSortSelect').addEventListener('change', filterAndSortWarga);
 }
 
 // --- ADD WARGA MODAL LOGIC ---
