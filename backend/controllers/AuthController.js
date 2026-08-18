@@ -58,7 +58,7 @@ class AuthController {
         email,
         password,
         role: role || 'warga',
-        no_hp: no_hp || '081234567890',
+        no_hp: no_hp || null,
         tempat_lahir,
         tanggal_lahir: tanggal_lahir || null,
         jenis_kelamin,

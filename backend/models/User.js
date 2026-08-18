@@ -10,7 +10,7 @@ class User {
       `INSERT INTO users 
        (nama, nik, email, password, role, status, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id_user`,
-      [nama, nik, email, hashedPassword, role, 'aktif', no_hp || '081234567890', tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, foto_ktp || null]
+      [nama, nik, email, hashedPassword, role, 'aktif', no_hp || null, tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, foto_ktp || null]
     );
     
     return { insertId: rows[0].id_user };
@@ -57,7 +57,7 @@ class User {
         alamat = ?,
         updated_at = CURRENT_TIMESTAMP 
        WHERE id_user = ?`,
-      [nama, no_hp || '081234567890', tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, id]
+      [nama, no_hp || null, tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, id]
     );
     return result;
   }
@@ -102,7 +102,7 @@ class User {
         alamat = ?, 
         updated_at = CURRENT_TIMESTAMP 
        WHERE id_user = ?`,
-      [nama, nik, email, status, no_hp || '081234567890', tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, id]
+      [nama, nik, email, status, no_hp || null, tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, id]
     );
     return result;
   }
