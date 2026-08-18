@@ -1213,23 +1213,13 @@ window.openDetailPanel = async function(id){
     const ktpUrl = p.foto_ktp.startsWith('data:') ? p.foto_ktp : `${serverBase}${p.foto_ktp}`;
     attachmentsHtml = `
       <div class="col-span-2 mt-2 pt-2 border-t border-dashed border-gray-200">
-        <p class="text-xs text-gray-400 uppercase font-bold mb-2 text-left">Dokumen Verifikasi Identitas</p>
+        <p class="text-xs text-gray-400 uppercase font-bold mb-2 text-left">Dokumen Verifikasi Identitas (Profil Warga)</p>
         <div class="max-w-md text-left">
           <span class="text-[10px] text-gray-400 font-bold mb-1 block">KTP Asli Pemohon</span>
           <a href="${ktpUrl}" target="_blank" class="block group relative rounded-xl overflow-hidden shadow border border-gray-200 bg-gray-100 aspect-[8.5/5.5]">
             <img src="${ktpUrl}" onerror="this.parentElement.outerHTML='<div class=\\\'p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs flex items-center gap-2\\\'><i class=\\\'fa-solid fa-triangle-exclamation text-red-500\\\'></i><span>Foto KTP lama tidak ditemukan di server Vercel. Silakan daftar warga baru untuk menguji penyimpanan Base64 abadi.</span></div>'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="KTP Warga" />
             <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-xs font-bold"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Perbesar Foto KTP</div>
           </a>
-        </div>
-      </div>
-    `;
-  } else {
-    attachmentsHtml = `
-      <div class="col-span-2 mt-2 pt-2 border-t border-dashed border-gray-200">
-        <p class="text-xs text-gray-400 uppercase font-bold mb-2 text-left">Dokumen Verifikasi Identitas</p>
-        <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl text-amber-700 text-xs flex items-center gap-2">
-          <i class="fa-solid fa-triangle-exclamation text-amber-500 text-sm"></i>
-          <span>Warga ini belum mengunggah foto/scan KTP pada akunnya (akun lama / belum melengkapi dokumen identitas).</span>
         </div>
       </div>
     `;
