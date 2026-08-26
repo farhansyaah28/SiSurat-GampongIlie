@@ -1340,22 +1340,33 @@ async function generateNomorSurat(id_pengajuan) {
   const pengajuan = await PengajuanSurat.findById(id_pengajuan);
   if (!pengajuan) return '001/GEN/GI-UK/' + new Date().getFullYear();
 
-  const id_jenis = pengajuan.id_jenis;
   const nama_jenis = pengajuan.nama_jenis;
   const code = getLetterTypeCode(nama_jenis);
-  
   const currentYear = new Date().getFullYear();
+
+  // Query all existing letter numbers for the current year
   const [rows] = await pool.execute(
-    `SELECT COUNT(*) as count 
+    `SELECT nomor_surat 
      FROM pengajuan_surat 
-     WHERE status = 'disetujui' 
-       AND EXTRACT(YEAR FROM tanggal_disetujui) = ?`,
-    [currentYear]
+     WHERE nomor_surat LIKE ?`,
+    [`%/GI-UK/${currentYear}`]
   );
-  
-  const count = parseInt(rows[0].count || '0', 10);
-  const nextNum = String(count + 1).padStart(3, '0');
-  
+
+  let maxNum = 0;
+  if (rows && rows.length > 0) {
+    rows.forEach(r => {
+      const ns = r.nomor_surat;
+      if (ns) {
+        const parts = ns.split('/');
+        const num = parseInt(parts[0], 10);
+        if (!isNaN(num) && num > maxNum) {
+          maxNum = num;
+        }
+      }
+    });
+  }
+
+  const nextNum = String(maxNum + 1).padStart(3, '0');
   return `${nextNum}/${code}/GI-UK/${currentYear}`;
 }
 
