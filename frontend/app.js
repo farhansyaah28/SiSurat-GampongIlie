@@ -957,11 +957,20 @@ if(el('#pengajuanForm')) {
       const id = window.reviseId || r.data.id_pengajuan;
       const fileEl = el('#fileInput');
       if (fileEl.files && fileEl.files.length){
-        const ffd = new FormData(); 
+        const base64Files = [];
         for (let i = 0; i < fileEl.files.length; i++) {
-          ffd.append('files', fileEl.files[i]);
+          const file = fileEl.files[i];
+          const base64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(file);
+          });
+          base64Files.push(base64);
         }
-        await fetch(apiBase+`/pengajuan/${id}/upload`, {method:'POST', headers:{'Authorization':'Bearer '+token}, body:ffd});
+        await apiFetch(`/pengajuan/${id}/upload`, {
+          method: 'POST',
+          body: { files: base64Files }
+        });
       }
       hideLoader();
       showToast(r.message || 'Pengajuan berhasil dikirim.'); 
@@ -1104,7 +1113,7 @@ window.openDetailPanel = async function(id){
       const fileName = f.split('/').pop();
       let icon = '<i class="fa-solid fa-file-lines text-blue-500"></i>';
       let label = 'Dokumen Lampiran';
-      if (f.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+      if (f.match(/\.(jpg|jpeg|png|gif|webp)$/i) || f.startsWith('data:image/')) {
         icon = '<i class="fa-solid fa-image text-emerald-500"></i>';
         label = 'Foto Lampiran';
       } else if (f.match(/\.(pdf)$/i)) {
@@ -1125,7 +1134,7 @@ window.openDetailPanel = async function(id){
               <p class="text-[11px] text-gray-400 truncate">${fileName}</p>
             </div>
           </div>
-          <a href="${serverBase}${f}" target="_blank" class="btn-outline !py-1.5 !px-3 text-xs flex items-center gap-1.5 flex-shrink-0 ml-2">
+          <a href="${f.startsWith('data:') ? f : serverBase + f}" target="_blank" class="btn-outline !py-1.5 !px-3 text-xs flex items-center gap-1.5 flex-shrink-0 ml-2">
             <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka / Lihat
           </a>
         </div>`;
@@ -1939,12 +1948,20 @@ if (document.getElementById('onBehalfForm')) {
       const id = r.data && r.data.id_pengajuan ? r.data.id_pengajuan : (r.data ? r.data.id : null);
       const fileEl = el('#fileInput');
       if (id && fileEl && fileEl.files && fileEl.files.length){
-        const ffd = new FormData(); 
+        const base64Files = [];
         for (let i = 0; i < fileEl.files.length; i++) {
-          ffd.append('files', fileEl.files[i]);
+          const file = fileEl.files[i];
+          const base64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(file);
+          });
+          base64Files.push(base64);
         }
-        const token = localStorage.getItem('token');
-        await fetch(apiBase+`/pengajuan/${id}/upload`, {method:'POST', headers:{'Authorization':'Bearer '+token}, body:ffd});
+        await apiFetch(`/pengajuan/${id}/upload`, {
+          method: 'POST',
+          body: { files: base64Files }
+        });
       }
       showToast(r.message);
       setTimeout(() => {

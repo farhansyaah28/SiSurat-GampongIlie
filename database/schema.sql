@@ -38,6 +38,8 @@ CREATE TABLE pengajuan_surat (
     nomor_surat VARCHAR(50),
     status ENUM('menunggu_verifikasi', 'terverifikasi', 'menunggu_persetujuan', 'disetujui', 'ditolak') DEFAULT 'menunggu_verifikasi',
     file_surat VARCHAR(255),
+    lampiran_file LONGTEXT,
+    lampiran_kk LONGTEXT,
     catatan_ditolak TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

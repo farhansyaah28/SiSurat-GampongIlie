@@ -13,8 +13,14 @@ router.get('/stats', verifyToken, PengajuanController.getStats);
 router.get('/:id', verifyToken, PengajuanController.getById);
 router.put('/:id', verifyToken, PengajuanController.update);
 
+const uploadMiddleware = (req, res, next) => {
+  if (req.headers['content-type']?.includes('multipart/form-data')) {
+    return upload.any()(req, res, next);
+  }
+  next();
+};
 // Upload file pendukung (warga)
-router.post('/:id/upload', verifyToken, upload.any(), PengajuanController.uploadFile);
+router.post('/:id/upload', verifyToken, uploadMiddleware, PengajuanController.uploadFile);
 // Download file pendukung
 router.get('/:id/download', verifyToken, PengajuanController.downloadFile);
 // Riwayat cetak

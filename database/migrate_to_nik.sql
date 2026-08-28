@@ -89,4 +89,8 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS no_hp VARCHAR(20);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_otp VARCHAR(6);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_otp_expires TIMESTAMP;
 
+-- 12. Pastikan kolom lampiran pendukung ada di tabel pengajuan_surat
+ALTER TABLE pengajuan_surat ADD COLUMN IF NOT EXISTS lampiran_file TEXT;
+ALTER TABLE pengajuan_surat ADD COLUMN IF NOT EXISTS lampiran_kk TEXT;
+
 COMMIT;

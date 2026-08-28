@@ -574,8 +574,19 @@ class PengajuanController {
   static async uploadFile(req, res) {
     try {
       const { id } = req.params;
-      const uploadedFiles = req.files && req.files.length > 0 ? req.files : (req.file ? [req.file] : []);
-      if (uploadedFiles.length === 0) {
+      const { files } = req.body;
+      
+      let filePaths = [];
+      if (files && Array.isArray(files)) {
+        filePaths = files;
+      } else {
+        const uploadedFiles = req.files && req.files.length > 0 ? req.files : (req.file ? [req.file] : []);
+        if (uploadedFiles.length > 0) {
+          filePaths = uploadedFiles.map(f => `/uploads/${f.filename}`);
+        }
+      }
+
+      if (filePaths.length === 0) {
         return res.status(400).json({ success: false, message: 'File tidak ditemukan' });
       }
 
@@ -591,8 +602,7 @@ class PengajuanController {
         } catch(e) { existingFiles = [pengajuan.lampiran_file]; }
       }
 
-      const newPaths = uploadedFiles.map(f => `/uploads/${f.filename}`);
-      const combinedFiles = [...existingFiles, ...newPaths];
+      const combinedFiles = [...existingFiles, ...filePaths];
       const storedValue = combinedFiles.length === 1 ? combinedFiles[0] : JSON.stringify(combinedFiles);
 
       await PengajuanSurat.updateLampiran(id, storedValue);

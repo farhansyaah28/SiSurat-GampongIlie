@@ -52,6 +52,8 @@ CREATE TABLE pengajuan_surat (
     nomor_surat VARCHAR(50),
     status pengajuan_status DEFAULT 'menunggu_verifikasi',
     file_surat VARCHAR(255),
+    lampiran_file TEXT,
+    lampiran_kk TEXT,
     catatan_ditolak TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
