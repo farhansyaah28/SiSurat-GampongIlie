@@ -9,13 +9,23 @@ CREATE TYPE cetak_status AS ENUM ('berhasil', 'gagal');
 
 -- 2. Tabel Users
 CREATE TABLE users (
-    id_user SERIAL PRIMARY KEY,
+    nik VARCHAR(20) PRIMARY KEY,
     nama VARCHAR(150) NOT NULL,
-    nik VARCHAR(20) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role user_role NOT NULL,
     status user_status DEFAULT 'aktif',
+    no_hp VARCHAR(20),
+    tempat_lahir VARCHAR(100),
+    tanggal_lahir DATE,
+    jenis_kelamin VARCHAR(20),
+    pekerjaan VARCHAR(100),
+    status_perkawinan VARCHAR(50),
+    agama VARCHAR(50),
+    alamat TEXT,
+    foto_ktp TEXT,
+    reset_otp VARCHAR(6),
+    reset_otp_expires TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -33,7 +43,7 @@ CREATE TABLE jenis_surat (
 -- 4. Tabel Pengajuan Surat
 CREATE TABLE pengajuan_surat (
     id_pengajuan SERIAL PRIMARY KEY,
-    id_user INT NOT NULL,
+    nik VARCHAR(20) NOT NULL,
     id_jenis INT NOT NULL,
     keperluan VARCHAR(255) NOT NULL,
     keterangan TEXT,
@@ -45,7 +55,7 @@ CREATE TABLE pengajuan_surat (
     catatan_ditolak TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE,
+    FOREIGN KEY (nik) REFERENCES users(nik) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (id_jenis) REFERENCES jenis_surat(id_jenis) ON DELETE RESTRICT
 );
 
@@ -56,24 +66,24 @@ CREATE TABLE riwayat_cetak (
     tanggal_cetak TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     jumlah_cetak INT DEFAULT 1,
     status_cetak cetak_status DEFAULT 'berhasil',
-    dicetak_oleh INT NOT NULL,
+    dicetak_oleh VARCHAR(20) NOT NULL,
     file_path VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_pengajuan) REFERENCES pengajuan_surat(id_pengajuan) ON DELETE CASCADE,
-    FOREIGN KEY (dicetak_oleh) REFERENCES users(id_user) ON DELETE CASCADE
+    FOREIGN KEY (dicetak_oleh) REFERENCES users(nik) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- 6. Tabel Audit Log
 CREATE TABLE audit_log (
     id_log SERIAL PRIMARY KEY,
-    id_user INT,
+    nik VARCHAR(20),
     aksi VARCHAR(100),
     deskripsi TEXT,
     tabel_target VARCHAR(50),
-    id_target INT,
+    id_target VARCHAR(50),
     ip_address VARCHAR(45),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE SET NULL
+    FOREIGN KEY (nik) REFERENCES users(nik) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 -- 7. Trigger Function untuk update timestamp otomatis (ON UPDATE CURRENT_TIMESTAMP)
@@ -108,10 +118,9 @@ INSERT INTO jenis_surat (nama_jenis, deskripsi) VALUES
 
 -- 9. Indexes untuk optimasi performa
 CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_nik ON users(nik);
-CREATE INDEX idx_pengajuan_user ON pengajuan_surat(id_user);
+CREATE INDEX idx_pengajuan_user ON pengajuan_surat(nik);
 CREATE INDEX idx_pengajuan_jenis ON pengajuan_surat(id_jenis);
 CREATE INDEX idx_pengajuan_status ON pengajuan_surat(status);
 CREATE INDEX idx_pengajuan_tanggal ON pengajuan_surat(tanggal_pengajuan);
 CREATE INDEX idx_cetak_pengajuan ON riwayat_cetak(id_pengajuan);
-CREATE INDEX idx_audit_user ON audit_log(id_user);
+CREATE INDEX idx_audit_user ON audit_log(nik);

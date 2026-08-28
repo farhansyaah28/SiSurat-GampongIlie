@@ -1842,7 +1842,7 @@ if (document.getElementById('onBehalfForm')) {
     if (r.success && r.data) {
       userSelect.innerHTML = '<option value="">-- Pilih Warga --</option>';
       r.data.forEach(user => {
-        userSelect.insertAdjacentHTML('beforeend', `<option value="${user.id_user}">${user.nama} (${user.nik || 'Tidak ada NIK'})</option>`);
+        userSelect.insertAdjacentHTML('beforeend', `<option value="${user.nik || user.id_user}">${user.nama} (${user.nik || 'Tidak ada NIK'})</option>`);
       });
     } else {
       showToast('Gagal memuat daftar warga');
@@ -1925,7 +1925,7 @@ if (document.getElementById('onBehalfForm')) {
         alamat: formObj.alamat || null
       };
     } else {
-      body.id_user = parseInt(formObj.id_user, 10);
+      body.nik = formObj.id_user;
     }
 
     const r = await apiFetch('/pengajuan/on-behalf', {
@@ -2026,13 +2026,13 @@ function renderWargaTable(list) {
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
           <div class="flex items-center justify-center gap-1.5">
-            <button onclick="openEditWargaModal(${warga.id_user})" class="btn-outline !px-2.5 !py-1 text-xs">
+            <button onclick="openEditWargaModal('${warga.nik || warga.id_user}')" class="btn-outline !px-2.5 !py-1 text-xs">
               <i class="fa-solid fa-user-pen"></i> Edit
             </button>
-            <button onclick="triggerResetPassword(${warga.id_user})" class="btn-danger-outline !px-2.5 !py-1 text-xs">
+            <button onclick="triggerResetPassword('${warga.nik || warga.id_user}')" class="btn-danger-outline !px-2.5 !py-1 text-xs">
               <i class="fa-solid fa-key"></i> Reset
             </button>
-            <button onclick="triggerDeleteWarga(${warga.id_user})" class="btn-danger-outline !px-2.5 !py-1 text-xs border-red-500 text-red-600 hover:bg-red-500 hover:text-white">
+            <button onclick="triggerDeleteWarga('${warga.nik || warga.id_user}')" class="btn-danger-outline !px-2.5 !py-1 text-xs border-red-500 text-red-600 hover:bg-red-500 hover:text-white">
               <i class="fa-solid fa-trash"></i> Hapus
             </button>
           </div>
@@ -2114,10 +2114,10 @@ function filterAndSortWarga() {
   } else if (sortBy === 'za') {
     result.sort((a, b) => (b.nama || '').localeCompare(a.nama || '', 'id'));
   } else if (sortBy === 'oldest') {
-    result.sort((a, b) => (a.id_user || 0) - (b.id_user || 0));
+    result.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
   } else {
     // newest (default)
-    result.sort((a, b) => (b.id_user || 0) - (a.id_user || 0));
+    result.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   }
 
   filteredWargaList = result;
@@ -2383,7 +2383,7 @@ if (document.getElementById('btnSubmitImport')) {
 
 // Edit Modal Opening & Setup
 window.openEditWargaModal = function(id) {
-  const warga = wargaListGlobal.find(w => w.id_user === id);
+  const warga = wargaListGlobal.find(w => (w.nik || w.id_user) === id);
   if (!warga) return;
 
   const modal = document.getElementById('editWargaModal');
@@ -2391,7 +2391,7 @@ window.openEditWargaModal = function(id) {
   if (!modal || !form) return;
 
   // Populate values
-  form.elements['id_user'].value = warga.id_user;
+  form.elements['id_user'].value = warga.nik || warga.id_user;
   form.elements['nama'].value = warga.nama || '';
   form.elements['nik'].value = warga.nik || '';
   form.elements['email'].value = warga.email || '';
@@ -2476,7 +2476,7 @@ if (document.getElementById('editWargaForm')) {
 
 // Reset Password Action (With Custom Prompt Modal)
 window.triggerResetPassword = function(id) {
-  const warga = wargaListGlobal.find(w => w.id_user === id);
+  const warga = wargaListGlobal.find(w => (w.nik || w.id_user) === id);
   if (!warga) return;
 
   const promptModal = document.getElementById('resetPasswordPromptModal');
@@ -2491,7 +2491,7 @@ window.triggerResetPassword = function(id) {
   const tigaDigitNIK = warga.nik.substring(Math.max(0, warga.nik.length - 3));
   const suggestedPassword = `${namaDepan}${tigaDigitNIK}`;
 
-  promptForm.elements['id_user'].value = warga.id_user;
+  promptForm.elements['id_user'].value = warga.nik || warga.id_user;
   wargaNameInput.value = warga.nama;
   wargaPasswordInput.value = suggestedPassword;
 
@@ -2559,7 +2559,7 @@ if (document.getElementById('btnConfirmResetClose')) {
 
 // Delete Citizen Action
 window.triggerDeleteWarga = function(id) {
-  const warga = wargaListGlobal.find(w => w.id_user === id);
+  const warga = wargaListGlobal.find(w => (w.nik || w.id_user) === id);
   if (!warga) return;
 
   customConfirm(

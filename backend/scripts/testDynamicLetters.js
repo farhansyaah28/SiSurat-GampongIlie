@@ -9,7 +9,7 @@ async function testDynamicLetters() {
   
   try {
     // 1. Get a citizen
-    const [users] = await pool.execute("SELECT id_user, nama FROM users WHERE role = 'warga' LIMIT 1");
+    const [users] = await pool.execute("SELECT nik as id_user, nama FROM users WHERE role = 'warga' LIMIT 1");
     if (!users.length) {
       throw new Error('No citizens found to run tests. Please run seeding first.');
     }
@@ -57,7 +57,7 @@ async function testDynamicLetters() {
     // 5. Generate PDF using the backend controller helper
     console.log('Generating PDF...');
     const mockUser = {
-      id_user: 1,
+      id_user: '1171012345670001',
       nama: 'Muhammad Nur',
       role: 'kepala_desa',
       nik: '1171012345670001'

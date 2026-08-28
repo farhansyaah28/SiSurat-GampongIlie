@@ -2,13 +2,14 @@ const pool = require('../config/database');
 
 class PengajuanSurat {
   static async create(pengajuanData) {
-    const { id_user, id_jenis, keperluan, keterangan, lampiran_kk } = pengajuanData;
+    const { id_user, nik, id_jenis, keperluan, keterangan, lampiran_kk } = pengajuanData;
+    const targetNik = nik || id_user;
     
     const [rows] = await pool.execute(
       `INSERT INTO pengajuan_surat 
-       (id_user, id_jenis, keperluan, keterangan, status, lampiran_kk) 
+       (nik, id_jenis, keperluan, keterangan, status, lampiran_kk) 
        VALUES (?, ?, ?, ?, 'menunggu_verifikasi', ?) RETURNING id_pengajuan`,
-      [id_user, id_jenis, keperluan, keterangan, lampiran_kk || null]
+      [targetNik, id_jenis, keperluan, keterangan, lampiran_kk || null]
     );
     
     return { insertId: rows[0].id_pengajuan };
@@ -16,25 +17,25 @@ class PengajuanSurat {
 
   static async findById(id) {
     const [rows] = await pool.execute(
-      `SELECT ps.*, js.nama_jenis, js.template_file, js.custom_fields, js.body_template, 
+      `SELECT ps.*, ps.nik as id_user, js.nama_jenis, js.template_file, js.custom_fields, js.body_template, 
               u.nama as nama_pemohon, u.nik, u.no_hp, u.tempat_lahir, u.tanggal_lahir, 
               u.jenis_kelamin, u.pekerjaan, u.status_perkawinan, u.agama, u.alamat, u.foto_ktp
        FROM pengajuan_surat ps
        JOIN jenis_surat js ON ps.id_jenis = js.id_jenis
-       JOIN users u ON ps.id_user = u.id_user
+       JOIN users u ON ps.nik = u.nik
        WHERE ps.id_pengajuan = ?`,
       [id]
     );
     return rows[0];
   }
 
-  static async findByUserId(id_user, limit = null, offset = null) {
-    let query = `SELECT ps.*, js.nama_jenis 
+  static async findByUserId(nik, limit = null, offset = null) {
+    let query = `SELECT ps.*, ps.nik as id_user, js.nama_jenis 
                  FROM pengajuan_surat ps
                  JOIN jenis_surat js ON ps.id_jenis = js.id_jenis
-                 WHERE ps.id_user = ?
+                 WHERE ps.nik = ?
                  ORDER BY ps.tanggal_pengajuan DESC`;
-    const params = [id_user];
+    const params = [nik];
     if (limit !== null && offset !== null) {
       query += ' LIMIT ? OFFSET ?';
       params.push(limit, offset);
@@ -43,19 +44,19 @@ class PengajuanSurat {
     return rows;
   }
 
-  static async countByUserId(id_user) {
+  static async countByUserId(nik) {
     const [rows] = await pool.execute(
-      `SELECT COUNT(*) as count FROM pengajuan_surat WHERE id_user = ?`,
-      [id_user]
+      `SELECT COUNT(*) as count FROM pengajuan_surat WHERE nik = ?`,
+      [nik]
     );
     return parseInt(rows[0].count || '0', 10);
   }
 
   static async getAll(status = null, limit = null, offset = null) {
-    let query = `SELECT ps.*, js.nama_jenis, u.nama as nama_pemohon, u.nik 
+    let query = `SELECT ps.*, ps.nik as id_user, js.nama_jenis, u.nama as nama_pemohon, u.nik 
                  FROM pengajuan_surat ps
                  JOIN jenis_surat js ON ps.id_jenis = js.id_jenis
-                 JOIN users u ON ps.id_user = u.id_user`;
+                 JOIN users u ON ps.nik = u.nik`;
     const params = [];
     
     if (status) {
@@ -78,7 +79,7 @@ class PengajuanSurat {
     let query = `SELECT COUNT(*) as count 
                  FROM pengajuan_surat ps
                  JOIN jenis_surat js ON ps.id_jenis = js.id_jenis
-                 JOIN users u ON ps.id_user = u.id_user`;
+                 JOIN users u ON ps.nik = u.nik`;
     const params = [];
     if (status) {
       query += ' WHERE ps.status = ?';

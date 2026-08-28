@@ -9,16 +9,16 @@ class User {
     const [rows] = await pool.execute(
       `INSERT INTO users 
        (nama, nik, email, password, role, status, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id_user`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING nik`,
       [nama, nik, email, hashedPassword, role, 'aktif', no_hp || null, tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, foto_ktp || null]
     );
     
-    return { insertId: rows[0].id_user };
+    return { insertId: rows[0].nik };
   }
 
   static async findByEmail(email) {
     const [rows] = await pool.execute(
-      'SELECT * FROM users WHERE email = ?',
+      'SELECT *, nik as id_user FROM users WHERE email = ?',
       [email]
     );
     return rows[0];
@@ -26,23 +26,23 @@ class User {
 
   static async findByNIK(nik) {
     const [rows] = await pool.execute(
-      'SELECT * FROM users WHERE nik = ?',
+      'SELECT *, nik as id_user FROM users WHERE nik = ?',
       [nik]
     );
     return rows[0];
   }
 
-  static async findById(id) {
+  static async findById(nik) {
     const [rows] = await pool.execute(
-      `SELECT id_user, nama, nik, email, role, status, no_hp, created_at, 
+      `SELECT nik as id_user, nama, nik, email, role, status, no_hp, created_at, 
               tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp 
-       FROM users WHERE id_user = ?`,
-      [id]
+       FROM users WHERE nik = ?`,
+      [nik]
     );
     return rows[0];
   }
 
-  static async updateProfile(id, profileData) {
+  static async updateProfile(nik, profileData) {
     const { nama, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = profileData;
     const [result] = await pool.execute(
       `UPDATE users SET 
@@ -56,14 +56,14 @@ class User {
         agama = ?, 
         alamat = ?,
         updated_at = CURRENT_TIMESTAMP 
-       WHERE id_user = ?`,
-      [nama, no_hp || null, tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, id]
+       WHERE nik = ?`,
+      [nama, no_hp || null, tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, nik]
     );
     return result;
   }
 
   static async getAll(role = null) {
-    let query = 'SELECT id_user, nama, nik, email, role, status, no_hp, created_at, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp FROM users';
+    let query = 'SELECT nik as id_user, nama, nik, email, role, status, no_hp, created_at, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat, foto_ktp FROM users';
     const params = [];
     
     if (role) {
@@ -75,16 +75,16 @@ class User {
     return rows;
   }
 
-  static async update(id, userData) {
+  static async update(nik, userData) {
     const { nama, email, status } = userData;
     const [result] = await pool.execute(
-      'UPDATE users SET nama = ?, email = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id_user = ?',
-      [nama, email, status, id]
+      'UPDATE users SET nama = ?, email = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE nik = ?',
+      [nama, email, status, nik]
     );
     return result;
   }
 
-  static async updateUserByAdmin(id, userData) {
+  static async updateUserByAdmin(oldNik, userData) {
     const { nama, nik, email, status, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = userData;
     const [result] = await pool.execute(
       `UPDATE users SET 
@@ -101,17 +101,17 @@ class User {
         agama = ?, 
         alamat = ?, 
         updated_at = CURRENT_TIMESTAMP 
-       WHERE id_user = ?`,
-      [nama, nik, email, status, no_hp || null, tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, id]
+       WHERE nik = ?`,
+      [nama, nik, email, status, no_hp || null, tempat_lahir || null, tanggal_lahir || null, jenis_kelamin || null, pekerjaan || null, status_perkawinan || null, agama || null, alamat || null, oldNik]
     );
     return result;
   }
 
-  static async updatePassword(id, plainPassword) {
+  static async updatePassword(nik, plainPassword) {
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
     const [result] = await pool.execute(
-      'UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id_user = ?',
-      [hashedPassword, id]
+      'UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE nik = ?',
+      [hashedPassword, nik]
     );
     return result;
   }
@@ -120,26 +120,26 @@ class User {
     return await bcrypt.compare(inputPassword, hashedPassword);
   }
 
-  static async setResetOtp(id, otp, expiresAt) {
+  static async setResetOtp(nik, otp, expiresAt) {
     const [result] = await pool.execute(
-      'UPDATE users SET reset_otp = ?, reset_otp_expires = ? WHERE id_user = ?',
-      [otp, expiresAt, id]
+      'UPDATE users SET reset_otp = ?, reset_otp_expires = ? WHERE nik = ?',
+      [otp, expiresAt, nik]
     );
     return result;
   }
 
-  static async clearResetOtp(id) {
+  static async clearResetOtp(nik) {
     const [result] = await pool.execute(
-      'UPDATE users SET reset_otp = NULL, reset_otp_expires = NULL WHERE id_user = ?',
-      [id]
+      'UPDATE users SET reset_otp = NULL, reset_otp_expires = NULL WHERE nik = ?',
+      [nik]
     );
     return result;
   }
 
-  static async delete(id) {
+  static async delete(nik) {
     const [result] = await pool.execute(
-      'DELETE FROM users WHERE id_user = ?',
-      [id]
+      'DELETE FROM users WHERE nik = ?',
+      [nik]
     );
     return result;
   }

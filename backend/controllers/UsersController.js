@@ -34,13 +34,21 @@ class UsersController {
 
       const result = await User.create(userData);
 
-      logAudit(req.user.id_user, 'CREATE_USER', `Mendaftarkan warga baru NIK: ${nik}`);
+      await logAudit({
+        nik: req.user.nik,
+        aksi: 'CREATE_USER',
+        deskripsi: `Mendaftarkan warga baru NIK: ${nik}`,
+        tabel_target: 'users',
+        id_target: result.insertId,
+        ip_address: req.ip
+      });
 
       res.status(201).json({ 
         success: true, 
         message: 'Warga berhasil didaftarkan',
         defaultPassword: defaultPassword,
-        id_user: result.insertId
+        id_user: result.insertId,
+        nik: result.insertId
       });
     } catch (error) {
       console.error('Create user error:', error);
@@ -122,7 +130,8 @@ class UsersController {
             nama,
             password: defaultPassword,
             success: true,
-            id_user: result.insertId
+            id_user: result.insertId,
+            nik: result.insertId
           });
         } catch (insertError) {
           console.error(`Error inserting resident NIK ${nik}:`, insertError);
@@ -137,7 +146,12 @@ class UsersController {
       }
 
       if (successCount > 0) {
-        logAudit(req.user.id_user, 'BULK_CREATE_USERS', `Mengimpor ${successCount} warga secara massal`);
+        await logAudit({
+          nik: req.user.nik,
+          aksi: 'BULK_CREATE_USERS',
+          deskripsi: `Mengimpor ${successCount} warga secara massal`,
+          ip_address: req.ip
+        });
       }
 
       res.status(200).json({
@@ -183,13 +197,13 @@ class UsersController {
       }
 
       // Check if NIK already used by another user
-      const [existingNik] = await pool.execute('SELECT id_user FROM users WHERE nik = ? AND id_user != ?', [nik, id]);
+      const [existingNik] = await pool.execute('SELECT nik FROM users WHERE nik = ? AND nik != ?', [nik, id]);
       if (existingNik.length > 0) {
         return res.status(400).json({ success: false, message: `NIK ${nik} sudah terdaftar pada pengguna lain` });
       }
 
       // Check if Email already used by another user
-      const [existingEmail] = await pool.execute('SELECT id_user FROM users WHERE email = ? AND id_user != ?', [email, id]);
+      const [existingEmail] = await pool.execute('SELECT nik FROM users WHERE email = ? AND nik != ?', [email, id]);
       if (existingEmail.length > 0) {
         return res.status(400).json({ success: false, message: `Email ${email} sudah terdaftar pada pengguna lain` });
       }
@@ -211,11 +225,11 @@ class UsersController {
 
       // Log Audit
       await logAudit({
-        id_user: actor.id_user,
+        nik: actor.nik,
         aksi: 'UPDATE_USER_BY_ADMIN',
-        deskripsi: `Aparatur desa mengupdate data warga: ${nama} (ID: ${id})`,
+        deskripsi: `Aparatur desa mengupdate data warga: ${nama} (NIK: ${id})`,
         tabel_target: 'users',
-        id_target: id,
+        id_target: nik,
         ip_address: req.ip
       });
 
@@ -247,9 +261,9 @@ class UsersController {
 
       // Log Audit
       await logAudit({
-        id_user: actor.id_user,
+        nik: actor.nik,
         aksi: 'RESET_PASSWORD_BY_ADMIN',
-        deskripsi: `Aparatur desa mereset kata sandi warga: ${user.nama} (ID: ${id})`,
+        deskripsi: `Aparatur desa mereset kata sandi warga: ${user.nama} (NIK: ${id})`,
         tabel_target: 'users',
         id_target: id,
         ip_address: req.ip
@@ -283,7 +297,7 @@ class UsersController {
       await User.delete(id);
 
       await logAudit({
-        id_user: actor.id_user,
+        nik: actor.nik,
         aksi: 'DELETE_USER',
         deskripsi: `Aparatur desa menghapus akun warga: ${user.nama} (NIK: ${user.nik})`,
         tabel_target: 'users',

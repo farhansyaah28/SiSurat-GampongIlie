@@ -5,25 +5,25 @@ async function run() {
   try {
     const hashedPassword = await bcrypt.hash('admin123', 10);
 
-    console.log('Mengubah akun Operator Test (ID: 6) menjadi Kepala Desa...');
+    console.log('Mengubah akun Operator Test menjadi Kepala Desa...');
     await pool.execute(
       `UPDATE users 
        SET role = 'kepala_desa', 
            email = 'kades@gmail.com', 
            nama = 'Kepala Desa', 
            password = ? 
-       WHERE id_user = 6 OR email = 'operator_1782918004963@example.local'`,
+       WHERE email = 'operator_1782918004963@example.local' OR email = 'kades@gmail.com'`,
       [hashedPassword]
     );
 
-    console.log('Mengubah akun Operator Rahmi (ID: 2) menjadi Operator dengan email singkat...');
+    console.log('Mengubah akun Operator Rahmi menjadi Operator dengan email singkat...');
     await pool.execute(
       `UPDATE users 
        SET role = 'operator', 
            email = 'operator@gmail.com', 
            nama = 'Operator Desa', 
            password = ? 
-       WHERE id_user = 2 OR email = 'operator_1782917025450@example.local'`,
+       WHERE email = 'operator_1782917025450@example.local' OR email = 'operator@gmail.com'`,
       [hashedPassword]
     );
 

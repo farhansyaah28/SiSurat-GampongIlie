@@ -3,7 +3,7 @@ const pool = require('../config/database');
 
 (async () => {
   try {
-    const [rows] = await pool.execute('SELECT id_user, nama, email, role, status FROM users');
+    const [rows] = await pool.execute('SELECT nik as id_user, nama, email, role, status FROM users');
     console.log('Registered Users:');
     console.log(JSON.stringify(rows, null, 2));
     process.exit(0);

@@ -73,7 +73,7 @@ class AuthController {
 
       // Log audit
       await logAudit({
-        id_user: result.insertId,
+        nik: result.insertId,
         aksi: 'REGISTER_USER',
         deskripsi: `Registrasi user baru dengan nama: ${nama}, role: ${role || 'warga'}`,
         tabel_target: 'users',
@@ -86,6 +86,7 @@ class AuthController {
         message: 'Registrasi berhasil',
         data: {
           id_user: result.insertId,
+          nik: result.insertId,
           email: email
         }
       });
@@ -139,6 +140,7 @@ class AuthController {
       const token = jwt.sign(
         {
           id_user: user.id_user,
+          nik: user.nik,
           email: user.email,
           role: user.role,
           nama: user.nama
@@ -149,11 +151,11 @@ class AuthController {
 
       // Log audit
       await logAudit({
-        id_user: user.id_user,
+        nik: user.nik,
         aksi: 'LOGIN_USER',
         deskripsi: `User login sukses: ${user.email} (${user.role})`,
         tabel_target: 'users',
-        id_target: user.id_user,
+        id_target: user.nik,
         ip_address: req.ip
       });
 
@@ -163,6 +165,7 @@ class AuthController {
         token,
         user: {
           id_user: user.id_user,
+          nik: user.nik,
           nama: user.nama,
           email: user.email,
           role: user.role
@@ -237,7 +240,7 @@ class AuthController {
 
       // Log audit
       await logAudit({
-        id_user,
+        nik: id_user,
         aksi: 'UPDATE_PROFILE',
         deskripsi: `User mengupdate profil pribadi: ${nama}`,
         tabel_target: 'users',
@@ -275,7 +278,7 @@ class AuthController {
       const otp = (100000 + Math.floor(Math.random() * 900000)).toString();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
-      await User.setResetOtp(user.id_user, otp, expiresAt);
+      await User.setResetOtp(user.nik, otp, expiresAt);
       
       // Kirim via WhatsApp
       await sendResetOtpNotification(user.no_hp, user.nama, otp);
@@ -314,16 +317,16 @@ class AuthController {
         return res.status(400).json({ success: false, message: 'Kode OTP sudah kedaluwarsa' });
       }
 
-      await User.updatePassword(user.id_user, newPassword);
-      await User.clearResetOtp(user.id_user);
+      await User.updatePassword(user.nik, newPassword);
+      await User.clearResetOtp(user.nik);
 
       // Log Audit
       await logAudit({
-        id_user: user.id_user,
+        nik: user.nik,
         aksi: 'RESET_PASSWORD',
         deskripsi: `User mereset kata sandi melalui WhatsApp OTP`,
         tabel_target: 'users',
-        id_target: user.id_user,
+        id_target: user.nik,
         ip_address: req.ip
       });
 

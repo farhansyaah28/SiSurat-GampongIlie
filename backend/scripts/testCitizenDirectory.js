@@ -28,8 +28,8 @@ async function testCitizenDirectory() {
 
   // Find a test citizen
   const citizen = listData.data.find(w => w.nama.includes('Muhammad Ali')) || listData.data[0];
-  const targetId = citizen.id_user;
-  console.log(`✓ Selected citizen: ${citizen.nama} (ID: ${targetId}, NIK: ${citizen.nik})`);
+  const targetId = citizen.nik || citizen.id_user;
+  console.log(`✓ Selected citizen: ${citizen.nama} (NIK: ${targetId})`);
 
   console.log(`\n3. Updating citizen Pekerjaan to 'PNS Gampong' (ID: ${targetId})...`);
   let updateRes = await fetch(base + `/users/${targetId}`, {

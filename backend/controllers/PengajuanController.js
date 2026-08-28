@@ -41,7 +41,8 @@ class PengajuanController {
   static async create(req, res) {
     try {
       const { id_jenis, keperluan, keterangan, lampiran_kk_base64 } = req.body;
-      const { id_user } = req.user;
+      const { id_user, nik } = req.user;
+      const targetNik = nik || id_user;
 
       if (!id_jenis || !keperluan) {
         return res.status(400).json({
@@ -52,7 +53,7 @@ class PengajuanController {
 
       // Check if citizen profile is complete
       if (req.user.role === 'warga') {
-        const user = await User.findById(id_user);
+        const user = await User.findById(targetNik);
         if (!user) {
           return res.status(404).json({ success: false, message: 'Data warga tidak ditemukan' });
         }
@@ -80,7 +81,7 @@ class PengajuanController {
       let lampiran_kk = null;
       if (lampiran_kk_base64) {
         try {
-          const user = await User.findById(id_user);
+          const user = await User.findById(targetNik);
           const nik = user ? user.nik : 'unknown';
           const fs = require('fs');
           const path = require('path');
@@ -103,7 +104,7 @@ class PengajuanController {
       }
 
       const data = {
-        id_user,
+        nik: targetNik,
         id_jenis,
         keperluan,
         keterangan,
@@ -114,7 +115,7 @@ class PengajuanController {
 
       // Log audit
       await logAudit({
-        id_user,
+        nik: targetNik,
         aksi: 'CREATE_PENGAJUAN',
         deskripsi: `Membuat pengajuan surat baru dengan id_jenis: ${id_jenis}, keperluan: ${keperluan}`,
         tabel_target: 'pengajuan_surat',
@@ -145,14 +146,15 @@ class PengajuanController {
     try {
       const { id } = req.params;
       const { keperluan, keterangan } = req.body;
-      const { id_user } = req.user;
+      const { id_user, nik } = req.user;
+      const targetNik = nik || id_user;
 
       const pengajuan = await PengajuanSurat.findById(id);
       if (!pengajuan) {
         return res.status(404).json({ success: false, message: 'Pengajuan tidak ditemukan' });
       }
 
-      if (pengajuan.id_user !== id_user) {
+      if (pengajuan.nik !== targetNik && pengajuan.id_user !== targetNik) {
         return res.status(403).json({ success: false, message: 'Anda tidak memiliki hak untuk merevisi pengajuan ini' });
       }
 
@@ -160,7 +162,7 @@ class PengajuanController {
 
       // Log audit
       await logAudit({
-        id_user,
+        nik: targetNik,
         aksi: 'REVISE_PENGAJUAN',
         deskripsi: `Merevisi pengajuan surat ID: ${id}, status kembali menjadi menunggu_verifikasi`,
         tabel_target: 'pengajuan_surat',
@@ -183,14 +185,14 @@ class PengajuanController {
 
   static async onBehalf(req, res) {
     try {
-      const { is_new_user, id_user, new_user_data, id_jenis, keperluan, keterangan } = req.body;
+      const { is_new_user, id_user, nik: reqNik, new_user_data, id_jenis, keperluan, keterangan } = req.body;
       const actor = req.user;
 
       if (!id_jenis || !keperluan) {
         return res.status(400).json({ success: false, message: 'Jenis surat dan keperluan harus diisi' });
       }
 
-      let targetUserId = id_user;
+      let targetUserId = reqNik || id_user;
 
       if (is_new_user) {
         const { nama, nik, email: inputEmail, no_hp, tempat_lahir, tanggal_lahir, jenis_kelamin, pekerjaan, status_perkawinan, agama, alamat } = new_user_data || {};
@@ -229,7 +231,7 @@ class PengajuanController {
 
         // Log audit user creation
         await logAudit({
-          id_user: actor.id_user,
+          nik: actor.nik || actor.id_user,
           aksi: 'CREATE_USER_ON_BEHALF',
           deskripsi: `Operator/Kades mendaftarkan warga baru atas nama: ${nama} (NIK: ${nik})`,
           tabel_target: 'users',
@@ -248,7 +250,7 @@ class PengajuanController {
 
       // Create pengajuan
       const result = await PengajuanSurat.create({
-        id_user: targetUserId,
+        nik: targetUserId,
         id_jenis,
         keperluan,
         keterangan
@@ -278,7 +280,7 @@ class PengajuanController {
 
       // Log audit pengajuan
       await logAudit({
-        id_user: actor.id_user,
+        nik: actor.nik || actor.id_user,
         aksi: 'CREATE_PENGAJUAN_ON_BEHALF',
         deskripsi: `Membuat pengajuan on-behalf dengan id_jenis: ${id_jenis}, status: ${targetStatus}`,
         tabel_target: 'pengajuan_surat',
@@ -314,13 +316,14 @@ class PengajuanController {
 
   static async getMyPengajuan(req, res) {
     try {
-      const { id_user } = req.user;
+      const { id_user, nik } = req.user;
+      const targetNik = nik || id_user;
       const page = parseInt(req.query.page || '1', 10);
       const limit = parseInt(req.query.limit || '10', 10);
       const offset = (page - 1) * limit;
 
-      const pengajuan = await PengajuanSurat.findByUserId(id_user, limit, offset);
-      const totalData = await PengajuanSurat.countByUserId(id_user);
+      const pengajuan = await PengajuanSurat.findByUserId(targetNik, limit, offset);
+      const totalData = await PengajuanSurat.countByUserId(targetNik);
       const totalPages = Math.ceil(totalData / limit);
 
       res.status(200).json({
@@ -401,7 +404,8 @@ class PengajuanController {
     try {
       const { id } = req.params;
       const { status, catatan_ditolak } = req.body;
-      const { id_user } = req.user;
+      const { id_user, nik } = req.user;
+      const targetNik = nik || id_user;
 
       if (!status) {
         return res.status(400).json({
@@ -427,11 +431,11 @@ class PengajuanController {
 
       // Log audit
       await logAudit({
-        id_user,
+        nik: targetNik,
         aksi: 'VERIFY_PENGAJUAN',
         deskripsi: `Operator memverifikasi pengajuan surat id: ${id} dengan status: ${status}${catatan_ditolak ? `, catatan: ${catatan_ditolak}` : ''}`,
         tabel_target: 'pengajuan_surat',
-        id_target: parseInt(id, 10),
+        id_target: id,
         ip_address: req.ip
       });
 
@@ -461,7 +465,8 @@ class PengajuanController {
     try {
       const { id } = req.params;
       let { nomor_surat } = req.body;
-      const { id_user } = req.user;
+      const { id_user, nik } = req.user;
+      const targetNik = nik || id_user;
 
       if (!nomor_surat) {
         nomor_surat = await generateNomorSurat(id);
@@ -484,11 +489,11 @@ class PengajuanController {
 
       // Log audit
       await logAudit({
-        id_user,
+        nik: targetNik,
         aksi: 'APPROVE_PENGAJUAN',
         deskripsi: `Kepala Desa menyetujui surat id: ${id} dengan nomor surat: ${nomor_surat}`,
         tabel_target: 'pengajuan_surat',
-        id_target: parseInt(id, 10),
+        id_target: id,
         ip_address: req.ip
       });
 
@@ -520,7 +525,8 @@ class PengajuanController {
     try {
       const { id } = req.params;
       const { catatan_ditolak } = req.body;
-      const { id_user } = req.user;
+      const { id_user, nik } = req.user;
+      const targetNik = nik || id_user;
 
       if (!catatan_ditolak) {
         return res.status(400).json({
@@ -535,11 +541,11 @@ class PengajuanController {
 
       // Log audit
       await logAudit({
-        id_user,
+        nik: targetNik,
         aksi: 'REJECT_PENGAJUAN',
         deskripsi: `Petugas menolak pengajuan surat id: ${id} dengan alasan: ${catatan_ditolak}`,
         tabel_target: 'pengajuan_surat',
-        id_target: parseInt(id, 10),
+        id_target: id,
         ip_address: req.ip
       });
 
@@ -1193,17 +1199,17 @@ class PengajuanController {
       id_pengajuan: id,
       jumlah_cetak: 1,
       status_cetak: 'berhasil',
-      dicetak_oleh: user.id_user,
+      dicetak_oleh: user.nik || user.id_user,
       file_path: relPath
     });
 
     // Catat Audit Log
     await logAudit({
-      id_user: user.id_user,
+      nik: user.nik || user.id_user,
       aksi: 'GENERATE_PDF',
       deskripsi: `Mencetak PDF surat untuk pengajuan id: ${id}. PDF disimpan ke: ${relPath}`,
       tabel_target: 'pengajuan_surat',
-      id_target: parseInt(id, 10),
+      id_target: id,
       ip_address: ipAddress
     });
 
