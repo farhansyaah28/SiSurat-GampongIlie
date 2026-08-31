@@ -339,6 +339,161 @@ class AuthController {
       res.status(500).json({ success: false, message: 'Terjadi kesalahan saat mengatur ulang kata sandi' });
     }
   }
+
+  static async downloadFormulirBiodata(req, res) {
+    try {
+      const PDFDocument = require('pdfkit');
+      const doc = new PDFDocument({
+        size: 'A4',
+        margin: 50
+      });
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=formulir_biodata_warga.pdf');
+
+      doc.pipe(res);
+
+      // Title
+      doc.font('Helvetica-Bold').fontSize(18).text('FORMULIR BIODATA', { align: 'center' });
+      doc.moveDown(0.2);
+      
+      const width = doc.page.width;
+      doc.lineWidth(1.5).moveTo(50, doc.y).lineTo(width - 50, doc.y).stroke();
+      doc.moveDown(1.5);
+
+      // Section I: IDENTITAS DIRI
+      doc.font('Helvetica-Bold').fontSize(12).text('I. IDENTITAS DIRI', 50, doc.y);
+      doc.moveDown(0.2);
+      doc.lineWidth(1).moveTo(50, doc.y).lineTo(width - 50, doc.y).stroke();
+      doc.moveDown(1);
+
+      // Form helper to draw line items
+      const drawFieldLine = (label, dotted = true) => {
+        const startY = doc.y;
+        doc.font('Helvetica-Bold').fontSize(10).fillColor('#333333').text(label, 50, startY, { width: 150 });
+        doc.font('Helvetica').fontSize(10).text(':', 200, startY);
+        
+        if (dotted) {
+          let dots = '';
+          const dotLength = 48;
+          for(let i=0; i<dotLength; i++) dots += '.';
+          doc.fillColor('#888888').text(dots, 215, startY);
+        }
+        doc.fillColor('#000000');
+        doc.moveDown(1.5);
+      };
+
+      // Draw Nama Lengkap *
+      drawFieldLine('Nama Lengkap *');
+
+      // Draw NIK (16 boxes)
+      const nikY = doc.y;
+      doc.font('Helvetica-Bold').fontSize(10).fillColor('#333333').text('NIK (16 Digit) *', 50, nikY, { width: 150 });
+      doc.font('Helvetica').fontSize(10).text(':', 200, nikY);
+      
+      const boxSize = 13;
+      const boxGap = 5;
+      const startX = 215;
+      for (let i = 0; i < 16; i++) {
+        const curX = startX + i * (boxSize + boxGap);
+        doc.rect(curX, nikY - 2, boxSize, boxSize).stroke();
+      }
+      doc.moveDown(2);
+
+      // Draw Tempat Lahir
+      drawFieldLine('Tempat Lahir');
+
+      // Draw Tanggal Lahir
+      const tglY = doc.y;
+      doc.font('Helvetica-Bold').fontSize(10).fillColor('#333333').text('Tanggal Lahir', 50, tglY, { width: 150 });
+      doc.font('Helvetica').fontSize(10).text(':', 200, tglY);
+      
+      let dotsTgl = '';
+      for(let i=0; i<25; i++) dotsTgl += '.';
+      doc.fillColor('#888888').text(dotsTgl, 215, tglY);
+      doc.font('Helvetica').fontSize(9).fillColor('#666666').text('(Tgl / Bln / Thn : GG / MM / TTTT)', 340, tglY);
+      doc.fillColor('#000000');
+      doc.moveDown(2.2);
+
+      // Draw Jenis Kelamin
+      const jkY = doc.y;
+      doc.font('Helvetica-Bold').fontSize(10).fillColor('#333333').text('Jenis Kelamin', 50, jkY, { width: 150 });
+      doc.font('Helvetica').fontSize(10).text(':', 200, jkY);
+      
+      doc.circle(220, jkY + 4, 5).stroke();
+      doc.font('Helvetica').fontSize(10).text('Laki-laki', 232, jkY);
+      
+      doc.circle(300, jkY + 4, 5).stroke();
+      doc.font('Helvetica').fontSize(10).text('Perempuan', 312, jkY);
+      doc.moveDown(2.2);
+
+      // Draw Agama
+      const agY = doc.y;
+      doc.font('Helvetica-Bold').fontSize(10).fillColor('#333333').text('Agama', 50, agY, { width: 150 });
+      doc.font('Helvetica').fontSize(10).text(':', 200, agY);
+      
+      const agamaOptions1 = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha'];
+      agamaOptions1.forEach((opt, idx) => {
+        const oX = 215 + idx * 65;
+        doc.rect(oX, agY - 2, 8, 8).stroke();
+        doc.font('Helvetica').fontSize(9).text(opt, oX + 13, agY - 2);
+      });
+      
+      const agY2 = agY + 16;
+      doc.rect(215, agY2 - 2, 8, 8).stroke();
+      doc.font('Helvetica').fontSize(9).text('Khonghucu', 228, agY2 - 2);
+      doc.moveDown(3);
+
+      // Draw Status Perkawinan
+      const spY = doc.y;
+      doc.font('Helvetica-Bold').fontSize(10).fillColor('#333333').text('Status Perkawinan', 50, spY, { width: 150 });
+      doc.font('Helvetica').fontSize(10).text(':', 200, spY);
+      
+      const spOptions = ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
+      spOptions.forEach((opt, idx) => {
+        const oX = 215 + idx * 75;
+        doc.rect(oX, spY - 2, 8, 8).stroke();
+        doc.font('Helvetica').fontSize(9).text(opt, oX + 13, spY - 2);
+      });
+      doc.moveDown(2.5);
+
+      // Draw Pekerjaan
+      drawFieldLine('Pekerjaan');
+
+      // Section II: KONTAK & ALAMAT DOMISILI
+      doc.font('Helvetica-Bold').fontSize(12).text('II. KONTAK & ALAMAT DOMISILI', 50, doc.y);
+      doc.moveDown(0.2);
+      doc.lineWidth(1).moveTo(50, doc.y).lineTo(width - 50, doc.y).stroke();
+      doc.moveDown(1.2);
+
+      // Draw Email Aktif
+      drawFieldLine('Email Aktif');
+
+      // Draw No. HP / WhatsApp
+      drawFieldLine('No. HP / WhatsApp');
+
+      // Draw Alamat Lengkap
+      const alY = doc.y;
+      doc.font('Helvetica-Bold').fontSize(10).fillColor('#333333').text('Alamat Lengkap', 50, alY, { width: 150 });
+      doc.font('Helvetica').fontSize(10).text(':', 200, alY);
+      
+      doc.font('Helvetica').fontSize(9).fillColor('#666666').text('(Dusun / Jalan / RT / RW / Desa / Kelurahan / Kecamatan)', 215, alY);
+      
+      const lineGap = 20;
+      doc.fillColor('#888888');
+      for (let i = 0; i < 3; i++) {
+        const lineYPos = alY + 22 + i * lineGap;
+        let lineDots = '';
+        for(let j=0; j<48; j++) lineDots += '.';
+        doc.text(lineDots, 215, lineYPos);
+      }
+
+      doc.end();
+    } catch (error) {
+      console.error('Download form error:', error);
+      res.status(500).send('Gagal mengunduh formulir.');
+    }
+  }
 }
 
 module.exports = AuthController;

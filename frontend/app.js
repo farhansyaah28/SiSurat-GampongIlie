@@ -487,6 +487,13 @@ async function apiFetch(path, opts={}){
 // --- AUTH LOGIC ---
 
 
+if (el('#btnDownloadFormulir')) {
+  el('#btnDownloadFormulir').addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = `${apiBase}/auth/download-formulir-biodata`;
+  });
+}
+
 if(el('#loginForm')) {
   el('#loginForm').addEventListener('submit', async e=>{
     e.preventDefault();
