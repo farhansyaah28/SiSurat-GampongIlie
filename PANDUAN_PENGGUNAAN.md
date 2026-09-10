@@ -169,4 +169,19 @@ Keuchik dapat memantau ringkasan statistik harian, bulanan, dan tahunan mengenai
 > **A:** Ya. Setiap dokumen PDF yang diunduh dilengkapi dengan nomor surat resmi terenkripsi dan Kode QR verifikasi keabsahan dokumen gampong.
 
 ---
+
+## 6. CARA MENJALANKAN LOKAL (UNTUK DEVELOPER / PENGUJIAN)
+Bagi Anda atau pihak lain yang ingin mengoperasikan aplikasi ini secara lokal di komputer lain dari awal:
+1. Silakan ikuti panduan instalasi lengkap di berkas **[README.md](README.md)**.
+2. **Langkah Ringkas:**
+   - **Kloning Repositori:**  
+     `git clone https://github.com/farhansyaah28/SiSurat-GampongIlie.git`
+   - **Konfigurasi Backend:**  
+     Masuk ke folder `backend`, jalankan `npm install`, buat file `.env` (isi `DATABASE_URL` PostgreSQL & `PORT=3000`).
+   - **Inisialisasi Database:**  
+     Impor berkas SQL dari `database/schema_postgres.sql` lalu jalankan `node scripts/setup_clean_accounts.js` untuk membuat akun default operator (`operator` / `password123`) & geuchik (`geuchik` / `password123`).
+   - **Jalankan Aplikasi:**  
+     Jalankan backend dengan `node app.js` di folder `backend`, lalu buka `frontend/index.html` menggunakan Live Server (port 5500).
+
+---
 *© 2026 Pemerintah Gampong Ilie — Platform Administrasi Terpadu Modern.*
